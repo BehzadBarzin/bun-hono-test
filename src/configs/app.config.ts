@@ -10,6 +10,14 @@ export const appConfigSchema = z.object({
     .default("3000")
     .transform((v) => Number(v))
     .pipe(z.number().min(1111).max(65535)),
+  HOST: z
+    .string()
+    .url()
+    .default("http://localhost")
+    .transform((v) => {
+      // remove trailing slash
+      return v.replace(/\/$/, "");
+    }),
 });
 
 // -------------------------------------------------------------------------------------------------
@@ -18,5 +26,6 @@ export const getAppConfig = (env: Environment) => {
   // Return the object referenced by the nested config object in 'configs.app'
   return {
     port: env.PORT,
+    host: env.HOST,
   };
 };
