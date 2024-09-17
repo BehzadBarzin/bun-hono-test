@@ -15,3 +15,13 @@ datasource db {
 // Models
 // =================================================================================================
 
+model Product {
+  id     Int    @id @default(autoincrement())
+  name   String
+  price  Int
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("products")
+}

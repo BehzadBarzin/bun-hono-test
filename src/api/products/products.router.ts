@@ -67,7 +67,7 @@ export function getProductsRouter(): Hono {
     const { id } = c.req.valid("param");
     await productsService.deleteProduct(id);
 
-    return c.status(204);
+    return c.json({ success: true });
   });
 
   // -----------------------------------------------------------------------------------------------
