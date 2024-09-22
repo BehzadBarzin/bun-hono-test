@@ -1,6 +1,7 @@
 import { type Product } from '@prisma/client';
 
 import { ForbiddenException } from '../../auth/exceptions/forbidden.exception';
+import { isSuperAdmin } from '../../auth/utils/is-super-admin';
 import { getPaginatedResponseMeta } from '../../common/schemas/pagination-query.schema';
 import type { TPaginatedResponse } from '../../common/types/paginated-response.type';
 import { NotFoundException } from '../../exceptions/not-found.exception';
@@ -9,7 +10,6 @@ import { db } from '../../utils/db';
 import type { TCreateProductBody } from './schemas/create-product-body.schema';
 import { getFindManyArgs, type TProductsFilterQuery } from './schemas/products-filter-query.schema';
 import type { TUpdateProductBody } from './schemas/update-product-body.schema';
-import { isSuperAdmin } from '../../auth/utils/is-super-admin';
 
 export class ProductsService {
   // -----------------------------------------------------------------------------------------------
