@@ -12,6 +12,8 @@ import { v4 as UUID } from "uuid";
 import { Prisma } from "@prisma/client";
 import { ValidationException } from "./exceptions/validation.exception";
 import { ZodError } from "zod";
+import authRouter from "./auth/api";
+import { seedAuthDB } from "./auth/utils/seed-db";
 
 // -------------------------------------------------------------------------------------------------
 // -------------------------------------------------------------------------------------------------
@@ -83,11 +85,17 @@ app.notFound((c) => {
 // Routes
 app.get("/", (c) => c.text("Hello World!"));
 
+// Register Auth routes
+app.route("/auth", authRouter);
+
 // Register API routes
 app.route("/api", apiRouter);
 
 // -------------------------------------------------------------------------------------------------
 console.log(`⚡️Server running on ${configs.app.host}:${configs.app.port}`);
+// -------------------------------------------------------------------------------------------------
+// Seed DB with Auth data
+await seedAuthDB();
 // -------------------------------------------------------------------------------------------------
 // -------------------------------------------------------------------------------------------------
 export default {

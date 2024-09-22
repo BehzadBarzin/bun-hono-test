@@ -2,6 +2,8 @@ import { config as dotenvConfig } from "dotenv";
 import { z } from "zod";
 
 import { appConfigSchema, getAppConfig } from "./app.config";
+import { dbConfigSchema, getDBConfig } from "./db.config";
+import { authConfigSchema, getAuthConfig } from "./auth.config";
 
 // -------------------------------------------------------------------------------------------------
 // -------------------------------------------------------------------------------------------------
@@ -22,7 +24,11 @@ dotenvConfig({ path: ENV_FILE });
 // -------------------------------------------------------------------------------------------------
 // Define the schema for environment variables using Zod
 // 1️⃣⭐ merge different groups' config schemas (from ./xyz.config.ts files)
-const envSchema = z.object({}).merge(appConfigSchema);
+const envSchema = z
+  .object({})
+  .merge(appConfigSchema)
+  .merge(dbConfigSchema)
+  .merge(authConfigSchema);
 
 // Type of the flat environment variables
 export type Environment = z.infer<typeof envSchema>;
@@ -51,6 +57,8 @@ if (!env.success) {
 // 2️⃣⭐ Call each group's function to extract its environment variables into a single object (from ./xyz.config.ts files)
 export const configs = {
   app: getAppConfig(env.data),
+  db: getDBConfig(env.data),
+  auth: getAuthConfig(env.data),
 };
 
 // -------------------------------------------------------------------------------------------------
