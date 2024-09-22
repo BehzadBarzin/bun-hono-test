@@ -1,15 +1,39 @@
 import { NotFoundException } from "../../exceptions/not-found.exception";
 import type { TCreateBody } from "./schemas/create-body.schema";
 import type { TUpdateBody } from "./schemas/update-body.schema";
+import {
+  getFindManyArgs,
+  type TProductsFilterQuery,
+} from "./schemas/products-filter-query.schema";
 
-import type { Product } from "@prisma/client";
+import type { TPaginatedResponse } from "../../common/types/paginated-response.type";
+
+import { type Product } from "@prisma/client";
 import { db } from "../../utils/db";
+import { getPaginatedResponseMeta } from "../../common/schemas/pagination-query.schema";
 
 export class ProductsService {
   // -----------------------------------------------------------------------------------------------
   // Get all
-  async getProducts(): Promise<Product[]> {
-    return await db.product.findMany();
+  async getProducts(
+    filterQuery: TProductsFilterQuery
+  ): Promise<TPaginatedResponse<Product>> {
+    const findManyArgs = getFindManyArgs(filterQuery);
+    const products = await db.product.findMany(findManyArgs);
+
+    const count = await db.product.aggregate({
+      where: filterQuery.where,
+      _count: true,
+    });
+
+    return {
+      data: products,
+      meta: getPaginatedResponseMeta(
+        count._count,
+        filterQuery.page,
+        filterQuery.size
+      ),
+    };
   }
 
   // -----------------------------------------------------------------------------------------------
@@ -27,13 +51,8 @@ export class ProductsService {
   // -----------------------------------------------------------------------------------------------
   // Create
   async createProduct(body: TCreateBody): Promise<Product> {
-    const { name, price } = body;
-
     const newProduct = await db.product.create({
-      data: {
-        name,
-        price,
-      },
+      data: body,
     });
 
     return newProduct;
@@ -42,8 +61,6 @@ export class ProductsService {
   // -----------------------------------------------------------------------------------------------
   // Update
   async updateProduct(id: number, body: TUpdateBody): Promise<Product> {
-    const { name, price } = body;
-
     const product = await db.product.findUnique({ where: { id } });
     if (!product) {
       throw new NotFoundException();
@@ -51,10 +68,7 @@ export class ProductsService {
 
     const updatedProduct = await db.product.update({
       where: { id },
-      data: {
-        name,
-        price,
-      },
+      data: body,
     });
 
     return updatedProduct;

@@ -11,6 +11,25 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+generator zod {
+  provider       = "zod-prisma-types"
+  // output                           = "./generated/zod" // default is ./generated/zod
+  // useMultipleFiles                 = true // default is false
+  // writeBarrelFiles                 = true // default is true
+  // createInputTypes                 = true // default is true
+  // createModelTypes                 = true // default is true
+  // addInputTypeValidation           = true // default is true
+  // addIncludeType                   = true // default is true
+  // addSelectType                    = true // default is true
+  // validateWhereUniqueInput         = true // default is true
+  // createOptionalDefaultValuesTypes = true // default is false
+  // createRelationValuesTypes        = true // default is false
+  // createPartialTypes               = true // default is false
+  // useDefaultValidators             = false // default is true
+  // coerceDate                       = false // default is true
+  // writeNullishInModelTypes         = true // default is false
+}
+
 // =================================================================================================
 // Models
 // =================================================================================================
@@ -23,5 +42,21 @@ model Product {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  userId Int @map("user_id")
+  user User @relation(fields: [userId], references: [id])
+
   @@map("products")
+}
+
+model User {
+  id     Int    @id @default(autoincrement())
+  name   String
+  email  String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  products Product[]
+
+  @@map("users")
 }

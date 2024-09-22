@@ -1,10 +1,8 @@
 import { z } from "zod";
+import { ProductUpdateInputSchema } from "../../../../prisma/generated/zod";
 
 // Validation schema
-export const updateBodySchema = z.object({
-  name: z.string().min(1).optional(),
-  price: z.number().min(0).optional(),
-});
+export const updateBodySchema = ProductUpdateInputSchema;
 
 // Type of validated schema
 export type TUpdateBody = z.infer<typeof updateBodySchema>;

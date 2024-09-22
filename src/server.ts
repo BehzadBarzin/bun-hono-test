@@ -9,6 +9,9 @@ import { BaseException } from "./exceptions/base.exception";
 import { NotFoundException } from "./exceptions/not-found.exception";
 
 import { v4 as UUID } from "uuid";
+import { Prisma } from "@prisma/client";
+import { ValidationException } from "./exceptions/validation.exception";
+import { ZodError } from "zod";
 
 // -------------------------------------------------------------------------------------------------
 // -------------------------------------------------------------------------------------------------
@@ -40,6 +43,14 @@ app.onError((err, c) => {
   // If the error is an instance of one of our custom BaseException classes, return the serialized error object
   if (err instanceof BaseException) {
     return c.json({ error: err.serializeErrors() }, err.statusCode);
+  }
+
+  // Some Prisma query options are directly passed from query-strings
+  // If there's an error with Prisma (invalid field names) or any other problem, we catch it here
+  // and return a valid (correct format) Validation Exception to user via the ValidationException class
+  if (err instanceof Prisma.PrismaClientValidationError) {
+    const newError = new ValidationException("Invalid Query", new ZodError([]));
+    return c.json({ error: newError.serializeErrors() }, newError.statusCode);
   }
 
   // For unknown exceptions, return a 500 response
