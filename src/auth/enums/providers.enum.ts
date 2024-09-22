@@ -1,3 +1,3 @@
 export enum EProviders {
-  local = "local",
+  local = 'local',
 }

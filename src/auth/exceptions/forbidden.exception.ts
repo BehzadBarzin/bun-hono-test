@@ -1,14 +1,12 @@
-import type { StatusCode } from "hono/utils/http-status";
-import {
-  BaseException,
-  type ExceptionResponse,
-} from "../../exceptions/base.exception";
+import type { StatusCode } from 'hono/utils/http-status';
+
+import { BaseException, type ExceptionResponse } from '../../exceptions/base.exception';
 
 export class ForbiddenException extends BaseException {
   statusCode: StatusCode = 403;
 
   constructor() {
-    super("Forbidden");
+    super('Forbidden');
   }
 
   serializeErrors(): ExceptionResponse {

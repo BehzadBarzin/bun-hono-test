@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 // Validation schema
 export const idParamSchema = z.object({

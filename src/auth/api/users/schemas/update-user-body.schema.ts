@@ -1,8 +1,8 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 export const updateUserBodySchema = z.object({
   // -----------------------------------------------------------------------------------------------
-  email: z.string().min(1, { message: "Email is required" }).email().optional(),
+  email: z.string().min(1, { message: 'Email is required' }).email().optional(),
   // -----------------------------------------------------------------------------------------------
   confirmed: z.boolean().optional(),
   // -----------------------------------------------------------------------------------------------

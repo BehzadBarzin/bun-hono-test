@@ -1,8 +1,10 @@
-import { Hono } from "hono";
-import { zValidator } from "../../../middlewares/z-validator.middleware";
-import { forgotPasswordBodySchema } from "./schemas/forgot-password-body.schema";
-import { PasswordResetService } from "./password-reset.service";
-import { resetPasswordBodySchema } from "./schemas/reset-password-body.schema";
+import { Hono } from 'hono';
+
+import { zValidator } from '../../../middlewares/z-validator.middleware';
+
+import { PasswordResetService } from './password-reset.service';
+import { forgotPasswordBodySchema } from './schemas/forgot-password-body.schema';
+import { resetPasswordBodySchema } from './schemas/reset-password-body.schema';
 
 /**
  * Creates a new Hono app instance with the entity-specific routes.
@@ -19,34 +21,26 @@ export function getPasswordResetRouter(): Hono {
   // -----------------------------------------------------------------------------------------------
   // -----------------------------------------------------------------------------------------------
   // Forgot password
-  router.post(
-    "/forgot-password",
-    zValidator("json", forgotPasswordBodySchema),
-    async (c) => {
-      const body = c.req.valid("json");
+  router.post('/forgot-password', zValidator('json', forgotPasswordBodySchema), async (c) => {
+    const body = c.req.valid('json');
 
-      await passwordResetService.sendPasswordResetToken(body);
+    await passwordResetService.sendPasswordResetToken(body);
 
-      return c.json({
-        success: true,
-        message: "Password reset email sent",
-      });
-    }
-  );
+    return c.json({
+      success: true,
+      message: 'Password reset email sent',
+    });
+  });
 
   // -----------------------------------------------------------------------------------------------
   // Reset password
-  router.post(
-    "/reset-password",
-    zValidator("json", resetPasswordBodySchema),
-    async (c) => {
-      const body = c.req.valid("json");
+  router.post('/reset-password', zValidator('json', resetPasswordBodySchema), async (c) => {
+    const body = c.req.valid('json');
 
-      const user = await passwordResetService.resetPassword(body);
+    const user = await passwordResetService.resetPassword(body);
 
-      return c.json(user);
-    }
-  );
+    return c.json(user);
+  });
 
   // -----------------------------------------------------------------------------------------------
   // -----------------------------------------------------------------------------------------------

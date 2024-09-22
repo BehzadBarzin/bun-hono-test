@@ -1,13 +1,15 @@
-import { Hono } from "hono";
+import { Hono } from 'hono';
+
+import { idParamSchema } from '../../../common/schemas/id-param.schema';
+import { paginationQuerySchema } from '../../../common/schemas/pagination-query.schema';
+import { zValidator } from '../../../middlewares/z-validator.middleware';
 import {
   authorize,
   type AuthHono,
   type AuthVariables,
-} from "../../middlewares/authorize.middleware";
-import { PermissionsService } from "./permissions.service";
-import { zValidator } from "../../../middlewares/z-validator.middleware";
-import { paginationQuerySchema } from "../../../common/schemas/pagination-query.schema";
-import { idParamSchema } from "../../../common/schemas/id-param.schema";
+} from '../../middlewares/authorize.middleware';
+
+import { PermissionsService } from './permissions.service';
 
 /**
  * Creates a new Hono app instance with the entity-specific routes.
@@ -25,33 +27,31 @@ export function getPermissionsRouter(): AuthHono {
   // -----------------------------------------------------------------------------------------------
   // Get all
   router.get(
-    "/",
-    authorize("permissions.getAll"),
-    zValidator("query", paginationQuerySchema),
+    '/',
+    authorize('permissions.getAll'),
+    zValidator('query', paginationQuerySchema),
     async (c) => {
       // Get validated pagination query from the zValidator middleware
-      const paginationQuery = c.req.valid("query");
+      const paginationQuery = c.req.valid('query');
 
-      const permissions = await permissionsService.getPermissions(
-        paginationQuery
-      );
+      const permissions = await permissionsService.getPermissions(paginationQuery);
 
       return c.json(permissions);
-    }
+    },
   );
 
   // -----------------------------------------------------------------------------------------------
   // Get one
   router.get(
-    "/:id",
-    authorize("permissions.getById"),
-    zValidator("param", idParamSchema),
+    '/:id',
+    authorize('permissions.getById'),
+    zValidator('param', idParamSchema),
     async (c) => {
-      const { id } = c.req.valid("param");
+      const { id } = c.req.valid('param');
       const permission = await permissionsService.getPermission(id);
 
       return c.json(permission);
-    }
+    },
   );
 
   // -----------------------------------------------------------------------------------------------

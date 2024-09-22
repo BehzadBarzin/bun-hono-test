@@ -1,5 +1,6 @@
-import { z } from "zod";
-import { ProductCreateInputSchema } from "../../../../prisma/generated/zod";
+import { z } from 'zod';
+
+import { ProductCreateInputSchema } from '../../../../prisma/generated/zod';
 
 // Validation schema
 export const createBodySchema = ProductCreateInputSchema;

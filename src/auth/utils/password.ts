@@ -1,6 +1,6 @@
-import bcrypt from "bcrypt";
+import bcrypt from 'bcrypt';
 
-// =============================================================================
+// =================================================================================================
 /**
  * Generate hash from password or string.
  *
@@ -11,7 +11,7 @@ export async function generateHash(password: string): Promise<string> {
   return bcrypt.hash(password, 10);
 }
 
-// =============================================================================
+// =================================================================================================
 /**
  * Validate password with hash
  *
@@ -21,7 +21,7 @@ export async function generateHash(password: string): Promise<string> {
  */
 export async function validateHash(
   password: string | undefined,
-  hash: string | undefined | null
+  hash: string | undefined | null,
 ): Promise<boolean> {
   if (!password || !hash) {
     return false;
@@ -30,4 +30,4 @@ export async function validateHash(
   return await bcrypt.compare(password, hash);
 }
 
-// =============================================================================
+// =================================================================================================

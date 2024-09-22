@@ -1,13 +1,13 @@
-import type { User } from "@prisma/client";
-import jwt, { type JwtPayload } from "jsonwebtoken";
+import type { User } from '@prisma/client';
+import jwt, { type JwtPayload } from 'jsonwebtoken';
 
-import type { CleanUser } from "../api/users/users.service";
+import type { CleanUser } from '../api/users/users.service';
 
-// =============================================================================
+// =================================================================================================
 
-export type { JwtPayload } from "jsonwebtoken";
+export type { JwtPayload } from 'jsonwebtoken';
 
-// =============================================================================
+// =================================================================================================
 /**
  * Generate JWT Access token
  */
@@ -21,7 +21,7 @@ export function generateAccessToken(user: User | CleanUser): string {
   });
 }
 
-// =============================================================================
+// =================================================================================================
 /**
  * Generate JWT Refresh token
  */
@@ -35,7 +35,7 @@ export function generateRefreshToken(user: User | CleanUser): string {
   });
 }
 
-// =============================================================================
+// =================================================================================================
 /**
  * Verify JWT Access Token
  */
@@ -43,7 +43,7 @@ export function verifyAccessToken(token: string): JwtPayload | null {
   try {
     const decoded: JwtPayload = jwt.verify(
       token,
-      process.env.JWT_ACCESS_TOKEN_SECRET!
+      process.env.JWT_ACCESS_TOKEN_SECRET!,
     ) as JwtPayload;
     return decoded;
   } catch (error) {
@@ -51,7 +51,7 @@ export function verifyAccessToken(token: string): JwtPayload | null {
   }
 }
 
-// =============================================================================
+// =================================================================================================
 /**
  * Verify JWT Refresh Token
  */
@@ -59,7 +59,7 @@ export function verifyRefreshToken(token: string): JwtPayload | null {
   try {
     const decoded: JwtPayload = jwt.verify(
       token,
-      process.env.JWT_REFRESH_TOKEN_SECRET!
+      process.env.JWT_REFRESH_TOKEN_SECRET!,
     ) as JwtPayload;
     return decoded;
   } catch (error) {
@@ -67,11 +67,11 @@ export function verifyRefreshToken(token: string): JwtPayload | null {
   }
 }
 
-// =============================================================================
+// =================================================================================================
 /**
  * Determine if string is a JWT
  */
 export function isJWT(token: string): boolean {
-  return token.split(".").length === 3;
+  return token.split('.').length === 3;
 }
-// =============================================================================
+// =================================================================================================

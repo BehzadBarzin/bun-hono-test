@@ -1,23 +1,18 @@
-import { NotFoundException } from "../../exceptions/not-found.exception";
-import type { TCreateBody } from "./schemas/create-body.schema";
-import type { TUpdateBody } from "./schemas/update-body.schema";
-import {
-  getFindManyArgs,
-  type TProductsFilterQuery,
-} from "./schemas/products-filter-query.schema";
+import { type Product } from '@prisma/client';
 
-import type { TPaginatedResponse } from "../../common/types/paginated-response.type";
+import { getPaginatedResponseMeta } from '../../common/schemas/pagination-query.schema';
+import type { TPaginatedResponse } from '../../common/types/paginated-response.type';
+import { NotFoundException } from '../../exceptions/not-found.exception';
+import { db } from '../../utils/db';
 
-import { type Product } from "@prisma/client";
-import { db } from "../../utils/db";
-import { getPaginatedResponseMeta } from "../../common/schemas/pagination-query.schema";
+import type { TCreateBody } from './schemas/create-body.schema';
+import { getFindManyArgs, type TProductsFilterQuery } from './schemas/products-filter-query.schema';
+import type { TUpdateBody } from './schemas/update-body.schema';
 
 export class ProductsService {
   // -----------------------------------------------------------------------------------------------
   // Get all
-  async getProducts(
-    filterQuery: TProductsFilterQuery
-  ): Promise<TPaginatedResponse<Product>> {
+  async getProducts(filterQuery: TProductsFilterQuery): Promise<TPaginatedResponse<Product>> {
     const findManyArgs = getFindManyArgs(filterQuery);
     const products = await db.product.findMany(findManyArgs);
 
@@ -28,11 +23,7 @@ export class ProductsService {
 
     return {
       data: products,
-      meta: getPaginatedResponseMeta(
-        count._count,
-        filterQuery.page,
-        filterQuery.size
-      ),
+      meta: getPaginatedResponseMeta(count._count, filterQuery.page, filterQuery.size),
     };
   }
 

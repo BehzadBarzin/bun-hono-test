@@ -1,13 +1,15 @@
-import type { User } from "@prisma/client";
-import { UsersService, type CleanUser } from "../users/users.service";
-import type { TForgotPasswordBody } from "./schemas/forgot-password-body.schema";
-import { db } from "../../../utils/db";
-import { generateToken } from "../../utils/token";
-import ms from "ms";
-import { configs } from "../../../configs";
-import type { TResetPasswordBody } from "./schemas/reset-password-body.schema";
-import { BadRequestException } from "../../../exceptions/bad-request.exception";
-import { generateHash } from "../../utils/password";
+import type { User } from '@prisma/client';
+import ms from 'ms';
+
+import { configs } from '../../../configs';
+import { BadRequestException } from '../../../exceptions/bad-request.exception';
+import { db } from '../../../utils/db';
+import { generateHash } from '../../utils/password';
+import { generateToken } from '../../utils/token';
+import { UsersService, type CleanUser } from '../users/users.service';
+
+import type { TForgotPasswordBody } from './schemas/forgot-password-body.schema';
+import type { TResetPasswordBody } from './schemas/reset-password-body.schema';
 
 export class PasswordResetService {
   private readonly usersService: UsersService;
@@ -41,9 +43,7 @@ export class PasswordResetService {
     // Generate a random token
     const token = generateToken();
 
-    const expiresAt =
-      new Date().getTime() +
-      ms(configs.auth.PASSWORD_RESET_TOKEN_EXPIRATION_TIME);
+    const expiresAt = new Date().getTime() + ms(configs.auth.PASSWORD_RESET_TOKEN_EXPIRATION_TIME);
 
     const newToken = await db.passwordResetToken.create({
       data: {
@@ -58,11 +58,11 @@ export class PasswordResetService {
 
     // Todo: Send link to email of the user
 
-    console.log("-".repeat(100));
+    console.log('-'.repeat(100));
     console.log(`🔗Password Reset Link`, link);
-    console.log("-".repeat(100));
+    console.log('-'.repeat(100));
     console.log(`🔑Password Reset Token`, newToken.token);
-    console.log("-".repeat(100));
+    console.log('-'.repeat(100));
   }
 
   // -----------------------------------------------------------------------------------------------
@@ -77,7 +77,7 @@ export class PasswordResetService {
     });
 
     if (!tokenEntity) {
-      throw new BadRequestException("Invalid Token");
+      throw new BadRequestException('Invalid Token');
     }
 
     // If token is expired
@@ -87,13 +87,13 @@ export class PasswordResetService {
         where: { id: tokenEntity.id },
       });
 
-      throw new BadRequestException("Token Expired");
+      throw new BadRequestException('Token Expired');
     }
 
     // Check if user exists
     const user = await this.usersService.getUser(tokenEntity.user.id);
     if (!user) {
-      throw new BadRequestException("Invalid Token");
+      throw new BadRequestException('Invalid Token');
     }
 
     // Update user's password

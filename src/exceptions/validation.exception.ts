@@ -1,7 +1,7 @@
-import type { StatusCode } from "hono/utils/http-status";
-import { BaseException, type ExceptionResponse } from "./base.exception";
+import type { StatusCode } from 'hono/utils/http-status';
+import type { ZodError } from 'zod';
 
-import type { ZodError } from "zod";
+import { BaseException, type ExceptionResponse } from './base.exception';
 
 export class ValidationException extends BaseException {
   statusCode: StatusCode = 400;
@@ -19,7 +19,7 @@ export class ValidationException extends BaseException {
       status: this.statusCode,
       message: this.message,
       validationIssues: this.zodError.issues.map((issue) => ({
-        path: issue.path.join("."),
+        path: issue.path.join('.'),
         message: issue.message,
         fatal: issue.fatal,
       })),

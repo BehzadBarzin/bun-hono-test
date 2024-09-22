@@ -1,21 +1,19 @@
-import { z } from "zod";
-import { paginationQuerySchema } from "../../../common/schemas/pagination-query.schema";
+import type { Prisma } from '@prisma/client';
+import { z } from 'zod';
+
 import {
   ProductSelectSchema,
   ProductIncludeSchema,
   ProductWhereInputSchema,
   ProductScalarFieldEnumSchema,
-} from "../../../../prisma/generated/zod";
-
-import type { Prisma } from "@prisma/client";
+} from '../../../../prisma/generated/zod';
+import { paginationQuerySchema } from '../../../common/schemas/pagination-query.schema';
 
 // =================================================================================================
 // Helpers
 // =================================================================================================
 
-export function getFindManyArgs(
-  filterQuery: TProductsFilterQuery
-): Prisma.ProductFindManyArgs {
+export function getFindManyArgs(filterQuery: TProductsFilterQuery): Prisma.ProductFindManyArgs {
   const findManyArgs: Prisma.ProductFindManyArgs = {
     orderBy: filterQuery.orderBy,
     skip: (filterQuery.page - 1) * filterQuery.size,
@@ -49,10 +47,7 @@ export const productsFilterQuerySchema = z
     // ---------------------------------------------------------------------------------------------
     // Validation copied from `ProductFindManyArgsSchema` in `prisma/generated/zod/index.ts`
     distinct: z
-      .union([
-        ProductScalarFieldEnumSchema,
-        ProductScalarFieldEnumSchema.array(),
-      ])
+      .union([ProductScalarFieldEnumSchema, ProductScalarFieldEnumSchema.array()])
       .optional(),
     // ---------------------------------------------------------------------------------------------
     select: ProductSelectSchema.optional(),
@@ -68,7 +63,7 @@ export const productsFilterQuerySchema = z
   // -----------------------------------------------------------------------------------------------
   // Prisma only can accept either `select` or `include`
   .refine((v) => !(v.select && v.include), {
-    message: "Query can only have either `select` or `include`",
+    message: 'Query can only have either `select` or `include`',
   });
 
 // Type of validated schema

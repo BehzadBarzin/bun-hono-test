@@ -1,6 +1,6 @@
-import { z } from "zod";
+import { z } from 'zod';
 
-import type { Environment } from ".";
+import type { Environment } from '.';
 
 // -------------------------------------------------------------------------------------------------
 // Validation schema for environment variables relevant to this group

@@ -1,24 +1,24 @@
-import { NotFoundException } from "../../../exceptions/not-found.exception";
-import type { TIssueTokenBody } from "./schemas/issue-token-body.schema";
+import { type ApiToken } from '@prisma/client';
 
-import type { TPaginatedResponse } from "../../../common/types/paginated-response.type";
-
-import { type ApiToken } from "@prisma/client";
-import { db } from "../../../utils/db";
 import {
   getPaginatedResponseMeta,
   getPaginationFindManyArgs,
   type TPaginationQuery,
-} from "../../../common/schemas/pagination-query.schema";
-import { ForbiddenException } from "../../exceptions/forbidden.exception";
-import { generateToken } from "../../utils/token";
+} from '../../../common/schemas/pagination-query.schema';
+import type { TPaginatedResponse } from '../../../common/types/paginated-response.type';
+import { NotFoundException } from '../../../exceptions/not-found.exception';
+import { db } from '../../../utils/db';
+import { ForbiddenException } from '../../exceptions/forbidden.exception';
+import { generateToken } from '../../utils/token';
+
+import type { TIssueTokenBody } from './schemas/issue-token-body.schema';
 
 export class ApiTokensService {
   // -----------------------------------------------------------------------------------------------
   // Get all
   async getAllApiTokensOfUser(
     userId: number,
-    paginationQuery: TPaginationQuery
+    paginationQuery: TPaginationQuery,
   ): Promise<TPaginatedResponse<ApiToken>> {
     const user = await db.user.findUnique({
       where: { id: userId },
@@ -29,9 +29,7 @@ export class ApiTokensService {
     }
 
     // Check if user has super-admin role
-    const isSuperAdmin: boolean = user.roles.some(
-      (role) => role.name === "super-admin"
-    );
+    const isSuperAdmin: boolean = user.roles.some((role) => role.name === 'super-admin');
     if (!isSuperAdmin) {
       throw new ForbiddenException();
     }
@@ -50,11 +48,7 @@ export class ApiTokensService {
     return {
       // Obscure all tokens
       data: apiTokens.map((apiToken) => this.obscureToken(apiToken)),
-      meta: getPaginatedResponseMeta(
-        count._count,
-        paginationQuery.page,
-        paginationQuery.size
-      ),
+      meta: getPaginatedResponseMeta(count._count, paginationQuery.page, paginationQuery.size),
     };
   }
 
@@ -83,9 +77,7 @@ export class ApiTokensService {
     }
 
     // User must be super-admin
-    const isSuperAdmin: boolean = user.roles.some(
-      (role) => role.name === "super-admin"
-    );
+    const isSuperAdmin: boolean = user.roles.some((role) => role.name === 'super-admin');
     if (!isSuperAdmin) {
       throw new ForbiddenException();
     }
@@ -128,9 +120,7 @@ export class ApiTokensService {
    */
   obscureToken(apiToken: ApiToken): ApiToken {
     const obscuredToken =
-      apiToken.token.slice(0, 3) +
-      "*".repeat(apiToken.token.length - 8) +
-      apiToken.token.slice(-4);
+      apiToken.token.slice(0, 3) + '*'.repeat(apiToken.token.length - 8) + apiToken.token.slice(-4);
     return {
       ...apiToken,
       token: obscuredToken,

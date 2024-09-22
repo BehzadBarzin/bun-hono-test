@@ -1,19 +1,18 @@
-import type { Permission } from "@prisma/client";
-import { NotFoundException } from "../../../exceptions/not-found.exception";
-import { db } from "../../../utils/db";
+import type { Permission } from '@prisma/client';
+
 import {
   getPaginatedResponseMeta,
   getPaginationFindManyArgs,
   type TPaginationQuery,
-} from "../../../common/schemas/pagination-query.schema";
-import type { TPaginatedResponse } from "../../../common/types/paginated-response.type";
+} from '../../../common/schemas/pagination-query.schema';
+import type { TPaginatedResponse } from '../../../common/types/paginated-response.type';
+import { NotFoundException } from '../../../exceptions/not-found.exception';
+import { db } from '../../../utils/db';
 
 export class PermissionsService {
   // -----------------------------------------------------------------------------------------------
   // Get all
-  async getPermissions(
-    paginationQuery: TPaginationQuery
-  ): Promise<TPaginatedResponse<Permission>> {
+  async getPermissions(paginationQuery: TPaginationQuery): Promise<TPaginatedResponse<Permission>> {
     const findManyArgs = getPaginationFindManyArgs(paginationQuery);
     const permissions = await db.permission.findMany(findManyArgs);
 
@@ -23,11 +22,7 @@ export class PermissionsService {
 
     return {
       data: permissions,
-      meta: getPaginatedResponseMeta(
-        count._count,
-        paginationQuery.page,
-        paginationQuery.size
-      ),
+      meta: getPaginatedResponseMeta(count._count, paginationQuery.page, paginationQuery.size),
     };
   }
 

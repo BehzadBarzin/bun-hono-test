@@ -1,19 +1,16 @@
-import { configs } from "./configs";
+import { Prisma } from '@prisma/client';
+import { Hono } from 'hono';
+import { serveStatic } from 'hono/bun';
+import { v4 as UUID } from 'uuid';
+import { ZodError } from 'zod';
 
-import { Hono } from "hono";
-import { serveStatic } from "hono/bun";
-
-import apiRouter from "./api";
-
-import { BaseException } from "./exceptions/base.exception";
-import { NotFoundException } from "./exceptions/not-found.exception";
-
-import { v4 as UUID } from "uuid";
-import { Prisma } from "@prisma/client";
-import { ValidationException } from "./exceptions/validation.exception";
-import { ZodError } from "zod";
-import authRouter from "./auth/api";
-import { seedAuthDB } from "./auth/utils/seed-db";
+import apiRouter from './api';
+import authRouter from './auth/api';
+import { seedAuthDB } from './auth/utils/seed-db';
+import { configs } from './configs';
+import { BaseException } from './exceptions/base.exception';
+import { NotFoundException } from './exceptions/not-found.exception';
+import { ValidationException } from './exceptions/validation.exception';
 
 // -------------------------------------------------------------------------------------------------
 // -------------------------------------------------------------------------------------------------
@@ -26,14 +23,14 @@ const app = new Hono({
 // -------------------------------------------------------------------------------------------------
 // Serve static files from /public directory
 app.get(
-  "*",
+  '*',
   serveStatic({
-    root: "public",
+    root: 'public',
     onFound(path, c) {
       // Called when the file is found. We can set Cache-Control headers here.
       // c.header("Cache-Control", `public, immutable, max-age=31536000`);
     },
-  })
+  }),
 );
 
 // -------------------------------------------------------------------------------------------------
@@ -51,7 +48,7 @@ app.onError((err, c) => {
   // If there's an error with Prisma (invalid field names) or any other problem, we catch it here
   // and return a valid (correct format) Validation Exception to user via the ValidationException class
   if (err instanceof Prisma.PrismaClientValidationError) {
-    const newError = new ValidationException("Invalid Query", new ZodError([]));
+    const newError = new ValidationException('Invalid Query', new ZodError([]));
     return c.json({ error: newError.serializeErrors() }, newError.statusCode);
   }
 
@@ -59,17 +56,17 @@ app.onError((err, c) => {
   const errorResponse = {
     id: UUID(), // Return a unique identifier for this error to be able to debug it from logs
     status: 500,
-    message: "Internal Server Error",
+    message: 'Internal Server Error',
     timestamp: new Date().toISOString(),
     request: c.req.path,
   };
 
   // Log the error response sent to client and the error details for debugging
-  console.log("-".repeat(100));
+  console.log('-'.repeat(100));
   console.error(errorResponse);
   console.error(err.message);
   console.log(err.stack);
-  console.log("-".repeat(100));
+  console.log('-'.repeat(100));
 
   return c.json({ error: errorResponse }, 500);
 });
@@ -83,13 +80,13 @@ app.notFound((c) => {
 // -------------------------------------------------------------------------------------------------
 // -------------------------------------------------------------------------------------------------
 // Routes
-app.get("/", (c) => c.text("Hello World!"));
+app.get('/', (c) => c.text('Hello World!'));
 
 // Register Auth routes
-app.route("/auth", authRouter);
+app.route('/auth', authRouter);
 
 // Register API routes
-app.route("/api", apiRouter);
+app.route('/api', apiRouter);
 
 // -------------------------------------------------------------------------------------------------
 console.log(`⚡️Server running on ${configs.app.host}:${configs.app.port}`);

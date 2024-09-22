@@ -1,36 +1,31 @@
-import { NotFoundException } from "../../../exceptions/not-found.exception";
-import type { TCreateUserBody } from "./schemas/create-user-body.schema";
-import type { TUpdateUserBody } from "./schemas/update-user-body.schema";
+import { type User } from '@prisma/client';
 
-import type { TPaginatedResponse } from "../../../common/types/paginated-response.type";
-
-import { type User } from "@prisma/client";
-import { db } from "../../../utils/db";
 import {
   getPaginatedResponseMeta,
   getPaginationFindManyArgs,
   type TPaginationQuery,
-} from "../../../common/schemas/pagination-query.schema";
-import { configs } from "../../../configs";
-import { BadRequestException } from "../../../exceptions/bad-request.exception";
-import { generateHash } from "../../utils/password";
-import { EProviders } from "../../enums/providers.enum";
+} from '../../../common/schemas/pagination-query.schema';
+import type { TPaginatedResponse } from '../../../common/types/paginated-response.type';
+import { configs } from '../../../configs';
+import { BadRequestException } from '../../../exceptions/bad-request.exception';
+import { NotFoundException } from '../../../exceptions/not-found.exception';
+import { db } from '../../../utils/db';
+import { EProviders } from '../../enums/providers.enum';
+import { generateHash } from '../../utils/password';
+
+import type { TCreateUserBody } from './schemas/create-user-body.schema';
+import type { TUpdateUserBody } from './schemas/update-user-body.schema';
 
 // =================================================================================================
 
-export type CleanUser = Omit<
-  User,
-  "password" | "resetPasswordToken" | "confirmationToken"
->;
+export type CleanUser = Omit<User, 'password' | 'resetPasswordToken' | 'confirmationToken'>;
 
 // =================================================================================================
 
 export class UsersService {
   // -----------------------------------------------------------------------------------------------
   // Get all
-  async getUsers(
-    paginationQuery: TPaginationQuery
-  ): Promise<TPaginatedResponse<CleanUser>> {
+  async getUsers(paginationQuery: TPaginationQuery): Promise<TPaginatedResponse<CleanUser>> {
     const findManyArgs = getPaginationFindManyArgs(paginationQuery);
     const users = await db.user.findMany(findManyArgs);
 
@@ -41,11 +36,7 @@ export class UsersService {
     return {
       // Clean users
       data: users.map((user) => this.cleanUser(user)),
-      meta: getPaginatedResponseMeta(
-        count._count,
-        paginationQuery.page,
-        paginationQuery.size
-      ),
+      meta: getPaginatedResponseMeta(count._count, paginationQuery.page, paginationQuery.size),
     };
   }
 
@@ -68,17 +59,15 @@ export class UsersService {
       where: { email: body.email },
     });
     if (existingUser) {
-      throw new BadRequestException("Email already in use");
+      throw new BadRequestException('Email already in use');
     }
 
     // Find the default "authenticated" role from DB
     const defaultRole = await db.role.findFirst({
-      where: { name: "authenticated" },
+      where: { name: 'authenticated' },
     });
     if (!defaultRole) {
-      throw new Error(
-        'Default "authenticated" role not found when creating a user'
-      );
+      throw new Error('Default "authenticated" role not found when creating a user');
     }
 
     // User Role connections
@@ -125,7 +114,7 @@ export class UsersService {
     if (body.roles) {
       // Find the default "authenticated" role from DB
       const defaultRole = await db.role.findFirst({
-        where: { name: "authenticated" },
+        where: { name: 'authenticated' },
       });
       if (!defaultRole) {
         throw new Error('Default "authenticated" role not found');
@@ -133,7 +122,7 @@ export class UsersService {
 
       // If update data doesn't have the default role, throw error
       if (!body.roles.includes(defaultRole.id)) {
-        throw new BadRequestException("Default role cannot be removed");
+        throw new BadRequestException('Default role cannot be removed');
       }
 
       // Update User Role connections
@@ -165,9 +154,7 @@ export class UsersService {
 
     // If it is the default super-admin user, throw an error
     if (user.email === configs.auth.SUPER_ADMIN_EMAIL) {
-      throw new BadRequestException(
-        'Cannot delete the default "super-admin" user'
-      );
+      throw new BadRequestException('Cannot delete the default "super-admin" user');
     }
 
     await db.user.delete({ where: { id } });
@@ -175,10 +162,7 @@ export class UsersService {
 
   // -----------------------------------------------------------------------------------------------
   // -----------------------------------------------------------------------------------------------
-  async getUserByEmail(
-    email: string,
-    includePassword: boolean = false
-  ): Promise<CleanUser | User> {
+  async getUserByEmail(email: string, includePassword: boolean = false): Promise<CleanUser | User> {
     const user = await db.user.findFirst({ where: { email } });
     if (!user) {
       throw new NotFoundException();

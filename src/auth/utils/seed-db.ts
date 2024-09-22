@@ -1,22 +1,22 @@
-import type { Permission, Role, User } from "@prisma/client";
+import type { Permission, Role, User } from '@prisma/client';
 
-import { db } from "../../utils/db";
+import { configs } from '../../configs';
+import { db } from '../../utils/db';
+import { EProviders } from '../enums/providers.enum';
 
-import { generateHash } from "./password";
-import { configs } from "../../configs";
-import { EProviders } from "../enums/providers.enum";
+import { generateHash } from './password';
 
 export async function seedAuthDB(): Promise<void> {
-  // ---------------------------------------------------------------------------
+  // -----------------------------------------------------------------------------------------------
   // Find or Create Roles
   const superAdminRole = await db.role.upsert({
     where: {
-      name: "super-admin",
+      name: 'super-admin',
     },
     update: {},
     create: {
-      name: "super-admin",
-      description: "Super Admin Role",
+      name: 'super-admin',
+      description: 'Super Admin Role',
     },
     include: {
       permissions: true,
@@ -25,19 +25,19 @@ export async function seedAuthDB(): Promise<void> {
 
   const authenticatedRole = await db.role.upsert({
     where: {
-      name: "authenticated",
+      name: 'authenticated',
     },
     update: {},
     create: {
-      name: "authenticated",
-      description: "Authenticated User Role",
+      name: 'authenticated',
+      description: 'Authenticated User Role',
     },
     include: {
       permissions: true,
     },
   });
 
-  // ---------------------------------------------------------------------------
+  // -----------------------------------------------------------------------------------------------
   // Find or Create Super Admin User
   const superAdminUser = await db.user.upsert({
     where: {
@@ -61,16 +61,15 @@ export async function seedAuthDB(): Promise<void> {
     },
   });
 
-  // ---------------------------------------------------------------------------
-  // ---------------------------------------------------------------------------
+  // -----------------------------------------------------------------------------------------------
+  // -----------------------------------------------------------------------------------------------
   // Add all permissions to the super-admin role
   const permissions: Permission[] = await db.permission.findMany();
 
   for (const permission of permissions) {
     // If permission → role doesn't exist, add it
     const hasPermission: boolean =
-      superAdminRole.permissions.some((p) => p.action === permission.action) ||
-      false;
+      superAdminRole.permissions.some((p) => p.action === permission.action) || false;
 
     if (!hasPermission) {
       await db.role.update({
@@ -87,7 +86,7 @@ export async function seedAuthDB(): Promise<void> {
       });
     }
   }
-  // ---------------------------------------------------------------------------
+  // -----------------------------------------------------------------------------------------------
 }
 
-// =============================================================================
+// =================================================================================================

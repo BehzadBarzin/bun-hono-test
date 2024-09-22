@@ -1,5 +1,6 @@
-import { z } from "zod";
-import type { TPaginatedResponseMeta } from "../types/paginated-response.type";
+import { z } from 'zod';
+
+import type { TPaginatedResponseMeta } from '../types/paginated-response.type';
 
 // =================================================================================================
 // Helpers
@@ -15,7 +16,7 @@ import type { TPaginatedResponseMeta } from "../types/paginated-response.type";
 export function getPaginatedResponseMeta(
   count: number,
   page: number,
-  size: number
+  size: number,
 ): TPaginatedResponseMeta {
   return {
     count,
@@ -50,11 +51,11 @@ export function getPaginationFindManyArgs(paginationQuery: TPaginationQuery) {
  * @returns - [{ id: "asc" }, { price: "asc" }]
  */
 const transformOrderBy = (v: string[]) => {
-  const orderBy: Record<string, "asc" | "desc">[] = [];
+  const orderBy: Record<string, 'asc' | 'desc'>[] = [];
 
   v.forEach((item) => {
-    const [field, direction] = item.split(":");
-    if (direction === "asc" || direction === "desc") {
+    const [field, direction] = item.split(':');
+    if (direction === 'asc' || direction === 'desc') {
       orderBy.push({ [field]: direction }); // Add field and direction to the array
     }
   });
@@ -73,9 +74,9 @@ export const paginationQuerySchema = z.object({
     .string()
     .transform((v) =>
       v
-        .replace(/\s/g, "") // Remove whitespace
-        .split(",")
-        .filter((i) => i !== "")
+        .replace(/\s/g, '') // Remove whitespace
+        .split(',')
+        .filter((i) => i !== ''),
     )
     .pipe(z.array(z.string()).transform(transformOrderBy))
     .optional(),
@@ -83,14 +84,14 @@ export const paginationQuerySchema = z.object({
   // size (page size): 20
   size: z
     .union([z.string(), z.number()])
-    .default("20")
+    .default('20')
     .transform((v) => Number(v))
     .pipe(z.number().min(1)),
   // -----------------------------------------------------------------------------------------------
   // page (current page): 1
   page: z
     .union([z.string(), z.number()])
-    .default("1")
+    .default('1')
     .transform((v) => Number(v))
     .pipe(z.number().min(1)),
   // -----------------------------------------------------------------------------------------------

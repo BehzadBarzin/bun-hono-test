@@ -1,8 +1,9 @@
-import { ForbiddenException } from "../exceptions/forbidden.exception";
-import { UnauthenticatedException } from "../exceptions/unauthenticated.exception";
-import { isJWT, type JwtPayload, verifyAccessToken } from "../utils/jwt";
-import { db } from "../../utils/db";
-import type { Hono, MiddlewareHandler } from "hono";
+import type { Hono, MiddlewareHandler } from 'hono';
+
+import { db } from '../../utils/db';
+import { ForbiddenException } from '../exceptions/forbidden.exception';
+import { UnauthenticatedException } from '../exceptions/unauthenticated.exception';
+import { isJWT, type JwtPayload, verifyAccessToken } from '../utils/jwt';
 
 // -------------------------------------------------------------------------------------------------
 /**
@@ -55,22 +56,22 @@ export const authorize = (action?: string): MiddlewareHandler => {
   return async (c, next) => {
     // ---------------------------------------------------------------------------------------------
     // Extract JWT from header
-    const authHeader = c.req.header("authorization");
-    if (!authHeader || typeof authHeader !== "string") {
+    const authHeader = c.req.header('authorization');
+    if (!authHeader || typeof authHeader !== 'string') {
       throw new UnauthenticatedException();
     }
 
-    const tokenParts = authHeader.split(" ");
-    if (tokenParts.length !== 2 && tokenParts[0] !== "Bearer") {
+    const tokenParts = authHeader.split(' ');
+    if (tokenParts.length !== 2 && tokenParts[0] !== 'Bearer') {
       throw new UnauthenticatedException();
     }
 
     const token = tokenParts[1];
-    // -------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------
     if (isJWT(token)) {
-      // -----------------------------------------------------------------------
+      // -------------------------------------------------------------------------------------------
       // If token is JWT, use user authentication
-      // -----------------------------------------------------------------------
+      // -------------------------------------------------------------------------------------------
       // Verify JWT
       const payload: JwtPayload | null = verifyAccessToken(token);
 
@@ -79,7 +80,7 @@ export const authorize = (action?: string): MiddlewareHandler => {
         throw new UnauthenticatedException();
       }
 
-      // -----------------------------------------------------------------------
+      // -------------------------------------------------------------------------------------------
       // Find user in database (populate roles and permissions)
       const user = await db.user.findUnique({
         where: { id: Number(payload.sub) },
@@ -93,11 +94,11 @@ export const authorize = (action?: string): MiddlewareHandler => {
       if (!user) {
         throw new UnauthenticatedException();
       }
-      // -----------------------------------------------------------------------
+      // -------------------------------------------------------------------------------------------
       // Attach userId to request context
-      c.set("userId", user.id);
-      c.set("token", token);
-      // -----------------------------------------------------------------------
+      c.set('userId', user.id);
+      c.set('token', token);
+      // -------------------------------------------------------------------------------------------
       // If an action is provided, check if the user has the required permission
       // This way, if no action is provided it means that we're just checking if the user is authenticated
       if (action) {
@@ -113,11 +114,11 @@ export const authorize = (action?: string): MiddlewareHandler => {
         }
       }
 
-      // -----------------------------------------------------------------------
+      // -------------------------------------------------------------------------------------------
     } else {
-      // -----------------------------------------------------------------------
+      // -------------------------------------------------------------------------------------------
       // If token is not JWT, it must be a valid api token access key
-      // -----------------------------------------------------------------------
+      // -------------------------------------------------------------------------------------------
       // Find api token from DB
       const apiToken = await db.apiToken.findFirst({
         where: { token: token, expiresAt: { gte: new Date() } },
@@ -128,28 +129,26 @@ export const authorize = (action?: string): MiddlewareHandler => {
         throw new UnauthenticatedException();
       }
 
-      // -----------------------------------------------------------------------
+      // -------------------------------------------------------------------------------------------
       // Attach userId of the api token's creator to the request object
-      c.set("userId", apiToken.userId);
-      // -----------------------------------------------------------------------
+      c.set('userId', apiToken.userId);
+      // -------------------------------------------------------------------------------------------
       // If an action is provided, check if the api token has the required permission
       if (action) {
         // If api token isn't fullAccess, check to see if the api token has permission
         if (!apiToken.fullAccess) {
-          const hasPermission: boolean = apiToken.permissions.some(
-            (permission) => {
-              return permission.action === action;
-            }
-          );
+          const hasPermission: boolean = apiToken.permissions.some((permission) => {
+            return permission.action === action;
+          });
 
           if (!hasPermission) {
             throw new ForbiddenException();
           }
         }
       }
-      // -----------------------------------------------------------------------
+      // -------------------------------------------------------------------------------------------
     }
-    // -------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------
     await next();
   };
 };

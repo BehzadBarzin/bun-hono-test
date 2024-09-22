@@ -1,16 +1,14 @@
-import { Hono } from "hono";
+import { Hono } from 'hono';
+import type { z } from 'zod';
 
-import { ProductsService } from "./products.service";
+import { idParamSchema } from '../../common/schemas/id-param.schema';
+import { validateFilterQuery } from '../../middlewares/validate-filter-query.middleware';
+import { zValidator } from '../../middlewares/z-validator.middleware';
 
-import { zValidator } from "../../middlewares/z-validator.middleware";
-
-import { idParamSchema } from "../../common/schemas/id-param.schema";
-import { createBodySchema } from "./schemas/create-body.schema";
-import { updateBodySchema } from "./schemas/update-body.schema";
-
-import { productsFilterQuerySchema } from "./schemas/products-filter-query.schema";
-import { validateFilterQuery } from "../../middlewares/validate-filter-query.middleware";
-import type { z } from "zod";
+import { ProductsService } from './products.service';
+import { createBodySchema } from './schemas/create-body.schema';
+import { productsFilterQuerySchema } from './schemas/products-filter-query.schema';
+import { updateBodySchema } from './schemas/update-body.schema';
 
 // -------------------------------------------------------------------------------------------------
 /**
@@ -41,9 +39,9 @@ export function getProductsRouter(): Hono<{ Variables: Variables }> {
   // -----------------------------------------------------------------------------------------------
   // -----------------------------------------------------------------------------------------------
   // Get all
-  router.get("/", validateFilterQuery(productsFilterQuerySchema), async (c) => {
+  router.get('/', validateFilterQuery(productsFilterQuerySchema), async (c) => {
     // Get validated filter query from the request context (attached by `validateFilterQuery` middleware)
-    const filterQuery = c.get("filterQuery");
+    const filterQuery = c.get('filterQuery');
 
     const products = await productsService.getProducts(filterQuery);
 
@@ -52,8 +50,8 @@ export function getProductsRouter(): Hono<{ Variables: Variables }> {
 
   // -----------------------------------------------------------------------------------------------
   // Get one
-  router.get("/:id", zValidator("param", idParamSchema), async (c) => {
-    const { id } = c.req.valid("param");
+  router.get('/:id', zValidator('param', idParamSchema), async (c) => {
+    const { id } = c.req.valid('param');
     const product = await productsService.getProduct(id);
 
     return c.json(product);
@@ -61,8 +59,8 @@ export function getProductsRouter(): Hono<{ Variables: Variables }> {
 
   // -----------------------------------------------------------------------------------------------
   // Create
-  router.post("/", zValidator("json", createBodySchema), async (c) => {
-    const body = c.req.valid("json");
+  router.post('/', zValidator('json', createBodySchema), async (c) => {
+    const body = c.req.valid('json');
     const product = await productsService.createProduct(body);
 
     return c.json(product, 201);
@@ -71,21 +69,21 @@ export function getProductsRouter(): Hono<{ Variables: Variables }> {
   // -----------------------------------------------------------------------------------------------
   // Update
   router.patch(
-    "/:id",
-    zValidator("param", idParamSchema),
-    zValidator("json", updateBodySchema),
+    '/:id',
+    zValidator('param', idParamSchema),
+    zValidator('json', updateBodySchema),
     async (c) => {
-      const { id } = c.req.valid("param");
-      const body = c.req.valid("json");
+      const { id } = c.req.valid('param');
+      const body = c.req.valid('json');
       const product = await productsService.updateProduct(id, body);
       return c.json(product);
-    }
+    },
   );
 
   // -----------------------------------------------------------------------------------------------
   // Delete
-  router.delete("/:id", zValidator("param", idParamSchema), async (c) => {
-    const { id } = c.req.valid("param");
+  router.delete('/:id', zValidator('param', idParamSchema), async (c) => {
+    const { id } = c.req.valid('param');
     await productsService.deleteProduct(id);
 
     return c.json({ success: true });
