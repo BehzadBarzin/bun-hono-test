@@ -63,7 +63,7 @@ export class ProductsService {
     }
 
     // Check if the user is the owner of the product or a super-admin
-    if (product.userId !== userId || !isSuperAdmin(userId)) {
+    if (product.userId !== userId && !isSuperAdmin(userId)) {
       throw new ForbiddenException();
     }
 
@@ -83,7 +83,7 @@ export class ProductsService {
     }
 
     // Check if the user is the owner of the product or a super-admin
-    if (product.userId !== userId || !isSuperAdmin(userId)) {
+    if (product.userId !== userId && !isSuperAdmin(userId)) {
       throw new ForbiddenException();
     }
 
