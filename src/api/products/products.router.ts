@@ -84,7 +84,7 @@ export function getProductsRouter(): Hono<{ Variables: Variables & AuthVariables
   // Update
   router.patch(
     '/:id',
-    authorize('products.update'),
+    authorize(),
     zValidator('param', idParamSchema),
     zValidator('json', updateProductBodySchema),
     async (c) => {
@@ -101,21 +101,16 @@ export function getProductsRouter(): Hono<{ Variables: Variables & AuthVariables
 
   // -----------------------------------------------------------------------------------------------
   // Delete
-  router.delete(
-    '/:id',
-    authorize('products.delete'),
-    zValidator('param', idParamSchema),
-    async (c) => {
-      const { id } = c.req.valid('param');
+  router.delete('/:id', authorize(), zValidator('param', idParamSchema), async (c) => {
+    const { id } = c.req.valid('param');
 
-      // Get userId attached by `authorize` middleware to context
-      const userId = c.get('userId');
+    // Get userId attached by `authorize` middleware to context
+    const userId = c.get('userId');
 
-      await productsService.deleteProduct(id, userId!);
+    await productsService.deleteProduct(id, userId!);
 
-      return c.json({ success: true });
-    },
-  );
+    return c.json({ success: true });
+  });
 
   // -----------------------------------------------------------------------------------------------
   // -----------------------------------------------------------------------------------------------

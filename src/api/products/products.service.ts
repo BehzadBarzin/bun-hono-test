@@ -9,6 +9,7 @@ import { db } from '../../utils/db';
 import type { TCreateProductBody } from './schemas/create-product-body.schema';
 import { getFindManyArgs, type TProductsFilterQuery } from './schemas/products-filter-query.schema';
 import type { TUpdateProductBody } from './schemas/update-product-body.schema';
+import { isSuperAdmin } from '../../auth/utils/is-super-admin';
 
 export class ProductsService {
   // -----------------------------------------------------------------------------------------------
@@ -61,8 +62,8 @@ export class ProductsService {
       throw new NotFoundException();
     }
 
-    // Check if the user is the owner of the product
-    if (product.userId !== userId) {
+    // Check if the user is the owner of the product or a super-admin
+    if (product.userId !== userId || !isSuperAdmin(userId)) {
       throw new ForbiddenException();
     }
 
@@ -81,8 +82,8 @@ export class ProductsService {
       throw new NotFoundException();
     }
 
-    // Check if the user is the owner of the product
-    if (product.userId !== userId) {
+    // Check if the user is the owner of the product or a super-admin
+    if (product.userId !== userId || !isSuperAdmin(userId)) {
       throw new ForbiddenException();
     }
 
