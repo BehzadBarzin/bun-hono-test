@@ -1,6 +1,8 @@
 import { config as dotenvConfig } from 'dotenv';
 import { z } from 'zod';
 
+import { logger } from '../utils/logger';
+
 import { appConfigSchema, getAppConfig } from './app.config';
 import { authConfigSchema, getAuthConfig } from './auth.config';
 import { dbConfigSchema, getDBConfig } from './db.config';
@@ -36,13 +38,13 @@ const env = envSchema.safeParse(process.env);
 // -------------------------------------------------------------------------------------------------
 // If validation fails
 if (!env.success) {
-  console.log('❌ There is an error with the environment variable validation!');
+  logger.error('❌ There is an error with the environment variable validation!');
   // Construct a more readable array of issues
   const issues = env.error.issues.map((issue) => {
     return [issue.path.join('.'), issue.message];
   });
 
-  console.error(issues);
+  logger.error(JSON.stringify(issues, null, 2));
   process.exit(1);
 }
 
@@ -59,4 +61,4 @@ export const configs = {
 
 // -------------------------------------------------------------------------------------------------
 // -------------------------------------------------------------------------------------------------
-console.log(`⚙️ Loaded environment from ${ENV_FILE}`);
+logger.info(`⚙️ Loaded environment from ${ENV_FILE}`);

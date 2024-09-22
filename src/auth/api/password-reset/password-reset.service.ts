@@ -4,6 +4,7 @@ import ms from 'ms';
 import { configs } from '../../../configs';
 import { BadRequestException } from '../../../exceptions/bad-request.exception';
 import { db } from '../../../utils/db';
+import { logger } from '../../../utils/logger';
 import { generateHash } from '../../utils/password';
 import { generateToken } from '../../utils/token';
 import { UsersService, type CleanUser } from '../users/users.service';
@@ -58,11 +59,8 @@ export class PasswordResetService {
 
     // Todo: Send link to email of the user
 
-    console.log('-'.repeat(100));
-    console.log(`🔗Password Reset Link`, link);
-    console.log('-'.repeat(100));
-    console.log(`🔑Password Reset Token`, newToken.token);
-    console.log('-'.repeat(100));
+    logger.debug(`🔗Password Reset Link`, link);
+    logger.debug(`🔑Password Reset Token`, newToken.token);
   }
 
   // -----------------------------------------------------------------------------------------------

@@ -1,6 +1,7 @@
 import { Prisma } from '@prisma/client';
 import { Hono } from 'hono';
 import { serveStatic } from 'hono/bun';
+import { logger as honoLogger } from 'hono/logger';
 import { v4 as UUID } from 'uuid';
 import { ZodError } from 'zod';
 
@@ -11,13 +12,23 @@ import { configs } from './configs';
 import { BaseException } from './exceptions/base.exception';
 import { NotFoundException } from './exceptions/not-found.exception';
 import { ValidationException } from './exceptions/validation.exception';
-
+import { logger } from './utils/logger';
 // -------------------------------------------------------------------------------------------------
 // -------------------------------------------------------------------------------------------------
 // Hono App
 const app = new Hono({
   strict: false, // app.get('/hello') will match both "GET /hello/" and "GET /hello"
 });
+
+// -------------------------------------------------------------------------------------------------
+// -------------------------------------------------------------------------------------------------
+// Setup Logger
+app.use(
+  honoLogger((message: string, ...rest: string[]) => {
+    // Logs once before handling request, and then after handling and prints status and time taken to process request.
+    logger.verbose(message, ...rest);
+  }),
+);
 
 // -------------------------------------------------------------------------------------------------
 // -------------------------------------------------------------------------------------------------
@@ -62,11 +73,7 @@ app.onError((err, c) => {
   };
 
   // Log the error response sent to client and the error details for debugging
-  console.log('-'.repeat(100));
-  console.error(errorResponse);
-  console.error(err.message);
-  console.log(err.stack);
-  console.log('-'.repeat(100));
+  logger.error(err.message, err);
 
   return c.json({ error: errorResponse }, 500);
 });
@@ -89,7 +96,7 @@ app.route('/auth', authRouter);
 app.route('/api', apiRouter);
 
 // -------------------------------------------------------------------------------------------------
-console.log(`⚡️Server running on ${configs.app.host}:${configs.app.port}`);
+logger.info(`⚡️Server running on ${configs.app.host}:${configs.app.port}`);
 // -------------------------------------------------------------------------------------------------
 // Seed DB with Auth data
 await seedAuthDB();
