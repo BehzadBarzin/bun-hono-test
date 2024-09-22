@@ -1,13 +1,14 @@
 import { type Product } from '@prisma/client';
 
+import { ForbiddenException } from '../../auth/exceptions/forbidden.exception';
 import { getPaginatedResponseMeta } from '../../common/schemas/pagination-query.schema';
 import type { TPaginatedResponse } from '../../common/types/paginated-response.type';
 import { NotFoundException } from '../../exceptions/not-found.exception';
 import { db } from '../../utils/db';
 
-import type { TCreateBody } from './schemas/create-body.schema';
+import type { TCreateProductBody } from './schemas/create-product-body.schema';
 import { getFindManyArgs, type TProductsFilterQuery } from './schemas/products-filter-query.schema';
-import type { TUpdateBody } from './schemas/update-body.schema';
+import type { TUpdateProductBody } from './schemas/update-product-body.schema';
 
 export class ProductsService {
   // -----------------------------------------------------------------------------------------------
@@ -41,9 +42,12 @@ export class ProductsService {
 
   // -----------------------------------------------------------------------------------------------
   // Create
-  async createProduct(body: TCreateBody): Promise<Product> {
+  async createProduct(userId: number, body: TCreateProductBody): Promise<Product> {
     const newProduct = await db.product.create({
-      data: body,
+      data: {
+        ...body,
+        user: { connect: { id: userId } },
+      },
     });
 
     return newProduct;
@@ -51,10 +55,15 @@ export class ProductsService {
 
   // -----------------------------------------------------------------------------------------------
   // Update
-  async updateProduct(id: number, body: TUpdateBody): Promise<Product> {
+  async updateProduct(id: number, userId: number, body: TUpdateProductBody): Promise<Product> {
     const product = await db.product.findUnique({ where: { id } });
     if (!product) {
       throw new NotFoundException();
+    }
+
+    // Check if the user is the owner of the product
+    if (product.userId !== userId) {
+      throw new ForbiddenException();
     }
 
     const updatedProduct = await db.product.update({
@@ -66,10 +75,15 @@ export class ProductsService {
   }
   // -----------------------------------------------------------------------------------------------
   // Delete
-  async deleteProduct(id: number): Promise<void> {
+  async deleteProduct(id: number, userId: number): Promise<void> {
     const product = await db.product.findUnique({ where: { id } });
     if (!product) {
       throw new NotFoundException();
+    }
+
+    // Check if the user is the owner of the product
+    if (product.userId !== userId) {
+      throw new ForbiddenException();
     }
 
     await db.product.delete({ where: { id } });
