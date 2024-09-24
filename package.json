@@ -9,7 +9,10 @@
     "db:generate-client": "dotenv -e .env.dev -- prisma generate",
     "db:studio": "dotenv -e .env.dev -- prisma studio",
     "lint:check": "eslint .",
-    "lint:fix": "eslint --fix ."
+    "lint:fix": "eslint --fix .",
+    "test:clear-db": "dotenv -e .env.test -- prisma db push --force-reset --skip-generate --accept-data-loss",
+    "test:run": "bun test",
+    "test:watch": "bun test --watch"
   },
   "devDependencies": {
     "@eslint/compat": "^1.1.1",

@@ -61,14 +61,31 @@ export const logger = winston.createLogger({
 });
 
 // =================================================================================================
-// Setup different loggers for different environments
+// Setup different logger transports for different environments
 // =================================================================================================
-// If we're not in production then log to the `console` with the format:
-// `${info.level}: ${info.message} JSON.stringify({ ...rest }) `
-if (process.env.NODE_ENV !== 'production') {
+// Production logger transport
+if (process.env.NODE_ENV === 'production') {
   logger.add(
     new winston.transports.Console({
       format: consoleLogFormat,
+    }),
+  );
+}
+
+// Development logger transport
+if (process.env.NODE_ENV === 'development') {
+  logger.add(
+    new winston.transports.Console({
+      format: consoleLogFormat,
+    }),
+  );
+}
+
+// Test logger transport
+if (process.env.NODE_ENV === 'test') {
+  logger.add(
+    new winston.transports.Console({
+      silent: true, // Silent (don't log)
     }),
   );
 }

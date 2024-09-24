@@ -16,7 +16,7 @@ import { logger } from './utils/logger';
 // -------------------------------------------------------------------------------------------------
 // -------------------------------------------------------------------------------------------------
 // Hono App
-const app = new Hono({
+export const app = new Hono({
   strict: false, // app.get('/hello') will match both "GET /hello/" and "GET /hello"
 });
 
