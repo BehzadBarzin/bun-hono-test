@@ -177,3 +177,5 @@ dist
 .vscode
 
 .env.*
+
+*.db

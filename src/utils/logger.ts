@@ -63,8 +63,10 @@ export const logger = winston.createLogger({
 // =================================================================================================
 // Setup different logger transports for different environments
 // =================================================================================================
+const ENV = process.env.NODE_ENV || process.env.ENV || 'development';
+
 // Production logger transport
-if (process.env.NODE_ENV === 'production') {
+if (ENV === 'production' || ENV === 'prod') {
   logger.add(
     new winston.transports.Console({
       format: consoleLogFormat,
@@ -73,7 +75,7 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 // Development logger transport
-if (process.env.NODE_ENV === 'development') {
+if (ENV === 'development' || ENV === 'dev') {
   logger.add(
     new winston.transports.Console({
       format: consoleLogFormat,
@@ -82,7 +84,7 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 // Test logger transport
-if (process.env.NODE_ENV === 'test') {
+if (ENV === 'test') {
   logger.add(
     new winston.transports.Console({
       silent: true, // Silent (don't log)
