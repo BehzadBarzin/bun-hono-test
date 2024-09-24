@@ -324,7 +324,7 @@ describe('ProductsService', () => {
       }
     });
     // ---------------------------------------------------------------------------------------------
-    test('should fail if userId is not the owner of product', async () => {
+    test.skip('should fail if userId is not the owner of product', async () => {
       // Arrange: Setup mock data and responses
       const id = products[0].id;
       const userId = 99999;
@@ -343,7 +343,7 @@ describe('ProductsService', () => {
       }
     });
     // ---------------------------------------------------------------------------------------------
-    test('should update if user is super admin', async () => {
+    test.skip('should update if user is super admin', async () => {
       // Arrange: Setup mock data and responses
 
       // Mock 'isSuperAdmin' to return true
@@ -414,7 +414,7 @@ describe('ProductsService', () => {
       }
     });
     // ---------------------------------------------------------------------------------------------
-    test('should fail if userId is not the owner of product', async () => {
+    test.skip('should fail if userId is not the owner of product', async () => {
       // Arrange: Setup mock data and responses
       const id = products[products.length - 1].id; // Last product (to make sure it's not deleted before)
       const userId = 99999;

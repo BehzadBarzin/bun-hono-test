@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import type { z } from 'zod';
 
+import { authorizeCreator } from '../../auth/middlewares/authorize-creator.middleware';
 import {
   authorize,
   type AuthHono,
@@ -66,7 +67,7 @@ export function getProductsRouter(): Hono<{ Variables: Variables & AuthVariables
   // Create
   router.post(
     '/',
-    authorize('products.create'),
+    authorize('products.create'), // Authentication required + User's role must have `products.create` permission
     zValidator('json', createProductBodySchema),
     async (c) => {
       const body = c.req.valid('json');
@@ -84,9 +85,12 @@ export function getProductsRouter(): Hono<{ Variables: Variables & AuthVariables
   // Update
   router.patch(
     '/:id',
-    authorize(),
     zValidator('param', idParamSchema),
     zValidator('json', updateProductBodySchema),
+    // Authentication required + Only the creator of the product can delete it
+    authorizeCreator(async (entityId) => {
+      return (await productsService.getProduct(entityId)).userId;
+    }),
     async (c) => {
       const { id } = c.req.valid('param');
       const body = c.req.valid('json');
@@ -101,16 +105,24 @@ export function getProductsRouter(): Hono<{ Variables: Variables & AuthVariables
 
   // -----------------------------------------------------------------------------------------------
   // Delete
-  router.delete('/:id', authorize(), zValidator('param', idParamSchema), async (c) => {
-    const { id } = c.req.valid('param');
+  router.delete(
+    '/:id',
+    zValidator('param', idParamSchema),
+    // Authentication required + Only the creator of the product can delete it
+    authorizeCreator(async (entityId) => {
+      return (await productsService.getProduct(entityId)).userId;
+    }),
+    async (c) => {
+      const { id } = c.req.valid('param');
 
-    // Get userId attached by `authorize` middleware to context
-    const userId = c.get('userId');
+      // Get userId attached by `authorize` middleware to context
+      const userId = c.get('userId');
 
-    await productsService.deleteProduct(id, userId!);
+      await productsService.deleteProduct(id, userId!);
 
-    return c.json({ success: true });
-  });
+      return c.json({ success: true });
+    },
+  );
 
   // -----------------------------------------------------------------------------------------------
   // -----------------------------------------------------------------------------------------------

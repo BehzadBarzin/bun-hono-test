@@ -1,7 +1,5 @@
 import { type Product } from '@prisma/client';
 
-import { ForbiddenException } from '../../auth/exceptions/forbidden.exception';
-import { isSuperAdmin } from '../../auth/utils/is-super-admin';
 import { getPaginatedResponseMeta } from '../../common/schemas/pagination-query.schema';
 import type { TPaginatedResponse } from '../../common/types/paginated-response.type';
 import { NotFoundException } from '../../exceptions/not-found.exception';
@@ -62,11 +60,6 @@ export class ProductsService {
       throw new NotFoundException();
     }
 
-    // Check if the user is the owner of the product or a super-admin
-    if (product.userId !== userId && !isSuperAdmin(userId)) {
-      throw new ForbiddenException();
-    }
-
     const updatedProduct = await db.product.update({
       where: { id },
       data: body,
@@ -80,11 +73,6 @@ export class ProductsService {
     const product = await db.product.findUnique({ where: { id } });
     if (!product) {
       throw new NotFoundException();
-    }
-
-    // Check if the user is the owner of the product or a super-admin
-    if (product.userId !== userId && !isSuperAdmin(userId)) {
-      throw new ForbiddenException();
     }
 
     await db.product.delete({ where: { id } });
