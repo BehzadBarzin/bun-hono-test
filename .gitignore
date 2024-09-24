@@ -179,3 +179,4 @@ dist
 .env.*
 
 *.db
+*.db-journal
