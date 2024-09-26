@@ -1,4 +1,4 @@
-import bcrypt from 'bcrypt';
+// import bcrypt from 'bcrypt';
 
 // =================================================================================================
 /**
@@ -8,7 +8,10 @@ import bcrypt from 'bcrypt';
  * @returns The hashed password
  */
 export async function generateHash(password: string): Promise<string> {
-  return bcrypt.hash(password, 10);
+  // Using bcrypt
+  // return bcrypt.hash(password, 10);
+  // Using Bun
+  return await Bun.password.hash(password);
 }
 
 // =================================================================================================
@@ -27,7 +30,10 @@ export async function validateHash(
     return false;
   }
 
-  return await bcrypt.compare(password, hash);
+  // Using bcrypt
+  // return await bcrypt.compare(password, hash);
+  // Using Bun
+  return await Bun.password.verify(password, hash);
 }
 
 // =================================================================================================

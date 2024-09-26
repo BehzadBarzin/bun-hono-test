@@ -8,6 +8,7 @@ import {
   type AuthVariables,
 } from '../../middlewares/authorize.middleware';
 
+import { registerAuthDocs } from './auth.docs';
 import { AuthService } from './auth.service';
 import { loginBodySchema } from './schemas/login-body.schema';
 import { registerBodySchema } from './schemas/register-body.schema';
@@ -87,6 +88,10 @@ export function getAuthRouter(): AuthHono {
     },
   );
 
+  // -----------------------------------------------------------------------------------------------
+  // -----------------------------------------------------------------------------------------------
+  // Register Docs
+  registerAuthDocs();
   // -----------------------------------------------------------------------------------------------
   // -----------------------------------------------------------------------------------------------
   return router;

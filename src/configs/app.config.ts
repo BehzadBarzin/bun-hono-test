@@ -18,6 +18,9 @@ export const appConfigSchema = z.object({
       // remove trailing slash
       return v.replace(/\/$/, '');
     }),
+  APP_NAME: z.string().default('API'),
+  APP_VERSION: z.string().default('1.0.0'),
+  APP_DESCRIPTION: z.string().default('Demo API'),
 });
 
 // -------------------------------------------------------------------------------------------------
@@ -27,5 +30,8 @@ export const getAppConfig = (env: Environment) => {
   return {
     port: env.PORT,
     host: env.HOST,
+    name: env.APP_NAME,
+    version: env.APP_VERSION,
+    description: env.APP_DESCRIPTION,
   };
 };

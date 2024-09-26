@@ -79,7 +79,8 @@ export const paginationQuerySchema = z.object({
         .filter((i) => i !== ''),
     )
     .pipe(z.array(z.string()).transform(transformOrderBy))
-    .optional(),
+    .optional()
+    .openapi({ example: 'name:asc,price:desc' }),
   // -----------------------------------------------------------------------------------------------
   // size (page size): 20
   size: z

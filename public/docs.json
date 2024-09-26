@@ -1,0 +1,2501 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "My API",
+    "version": "1.0.0",
+    "description": "Test API"
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {},
+    "parameters": {}
+  },
+  "paths": {
+    "/api/products": {
+      "get": {
+        "description": "Get all products",
+        "tags": [
+          "Products"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "example": "name:asc,price:desc"
+            },
+            "required": false,
+            "name": "orderBy",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "default": "20"
+            },
+            "required": false,
+            "name": "size",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "default": "1"
+            },
+            "required": false,
+            "name": "page",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "string"
+                }
+              ],
+              "examples": [
+                "id",
+                [
+                  "id",
+                  "name"
+                ]
+              ]
+            },
+            "required": false,
+            "name": "distinct",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "object",
+              "properties": {},
+              "example": {
+                "id": true,
+                "name": true
+              }
+            },
+            "required": false,
+            "name": "select",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "object",
+              "properties": {},
+              "example": {
+                "info": true,
+                "posts": {
+                  "likes": true
+                }
+              }
+            },
+            "required": false,
+            "name": "include",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "object",
+              "properties": {},
+              "example": {
+                "email": {
+                  "endsWith": "@example.com"
+                },
+                "posts": {
+                  "some": {
+                    "views": {
+                      "gt": 10
+                    }
+                  }
+                }
+              }
+            },
+            "required": false,
+            "name": "where",
+            "in": "query"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "price": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "name",
+                  "price"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "price": {
+                            "type": "integer"
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "updatedAt": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "userId": {
+                            "type": "integer"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "name",
+                          "price",
+                          "createdAt",
+                          "updatedAt",
+                          "userId"
+                        ]
+                      }
+                    },
+                    "meta": {
+                      "type": "object",
+                      "properties": {
+                        "count": {
+                          "type": "number"
+                        },
+                        "page": {
+                          "type": "number"
+                        },
+                        "totalPages": {
+                          "type": "number"
+                        }
+                      },
+                      "required": [
+                        "count",
+                        "page",
+                        "totalPages"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "data",
+                    "meta"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "type": "number",
+                          "example": 400
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Bad Request"
+                        },
+                        "validationIssues": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "path": {
+                                "type": "string"
+                              },
+                              "message": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "path",
+                              "message"
+                            ]
+                          },
+                          "description": "Only returns this array if there are validation issues",
+                          "example": [
+                            {
+                              "path": "info.name",
+                              "message": "Name is required"
+                            },
+                            {
+                              "path": "password",
+                              "message": "Password must be at least 6 characters long"
+                            }
+                          ]
+                        }
+                      },
+                      "required": [
+                        "status",
+                        "message",
+                        "validationIssues"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "example": "b634aa92-6d42-4173-968d-d23812fd9d6e"
+                        },
+                        "status": {
+                          "type": "number",
+                          "example": 500
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Internal Server Error"
+                        },
+                        "timestamp": {
+                          "type": "string",
+                          "example": "2024-09-26T02:51:11.229Z"
+                        },
+                        "request": {
+                          "type": "string",
+                          "example": "/api/users/1"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "status",
+                        "message",
+                        "timestamp",
+                        "request"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "description": "Create a new product",
+        "tags": [
+          "Products"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "price": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "name",
+                  "price"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "price": {
+                      "type": "integer"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "userId": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "name",
+                    "price",
+                    "createdAt",
+                    "updatedAt",
+                    "userId"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "type": "number",
+                          "example": 400
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Bad Request"
+                        },
+                        "validationIssues": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "path": {
+                                "type": "string"
+                              },
+                              "message": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "path",
+                              "message"
+                            ]
+                          },
+                          "description": "Only returns this array if there are validation issues",
+                          "example": [
+                            {
+                              "path": "info.name",
+                              "message": "Name is required"
+                            },
+                            {
+                              "path": "password",
+                              "message": "Password must be at least 6 characters long"
+                            }
+                          ]
+                        }
+                      },
+                      "required": [
+                        "status",
+                        "message",
+                        "validationIssues"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthenticated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "type": "number",
+                          "example": 401
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Unauthenticated"
+                        }
+                      },
+                      "required": [
+                        "status",
+                        "message"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthenticated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "type": "number",
+                          "example": 403
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Forbidden"
+                        }
+                      },
+                      "required": [
+                        "status",
+                        "message"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "example": "b634aa92-6d42-4173-968d-d23812fd9d6e"
+                        },
+                        "status": {
+                          "type": "number",
+                          "example": 500
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Internal Server Error"
+                        },
+                        "timestamp": {
+                          "type": "string",
+                          "example": "2024-09-26T02:51:11.229Z"
+                        },
+                        "request": {
+                          "type": "string",
+                          "example": "/api/users/1"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "status",
+                        "message",
+                        "timestamp",
+                        "request"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/products/:id": {
+      "get": {
+        "description": "Get a product by id",
+        "tags": [
+          "Products"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "price": {
+                      "type": "integer"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "userId": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "name",
+                    "price",
+                    "createdAt",
+                    "updatedAt",
+                    "userId"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "type": "number",
+                          "example": 400
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Bad Request"
+                        },
+                        "validationIssues": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "path": {
+                                "type": "string"
+                              },
+                              "message": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "path",
+                              "message"
+                            ]
+                          },
+                          "description": "Only returns this array if there are validation issues",
+                          "example": [
+                            {
+                              "path": "info.name",
+                              "message": "Name is required"
+                            },
+                            {
+                              "path": "password",
+                              "message": "Password must be at least 6 characters long"
+                            }
+                          ]
+                        }
+                      },
+                      "required": [
+                        "status",
+                        "message",
+                        "validationIssues"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "type": "number",
+                          "example": 404
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Not found"
+                        }
+                      },
+                      "required": [
+                        "status",
+                        "message"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "example": "b634aa92-6d42-4173-968d-d23812fd9d6e"
+                        },
+                        "status": {
+                          "type": "number",
+                          "example": 500
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Internal Server Error"
+                        },
+                        "timestamp": {
+                          "type": "string",
+                          "example": "2024-09-26T02:51:11.229Z"
+                        },
+                        "request": {
+                          "type": "string",
+                          "example": "/api/users/1"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "status",
+                        "message",
+                        "timestamp",
+                        "request"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "description": "Update a product by id",
+        "tags": [
+          "Products"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "price": {
+                    "type": "integer"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "price": {
+                      "type": "integer"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "userId": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "name",
+                    "price",
+                    "createdAt",
+                    "updatedAt",
+                    "userId"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "type": "number",
+                          "example": 400
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Bad Request"
+                        },
+                        "validationIssues": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "path": {
+                                "type": "string"
+                              },
+                              "message": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "path",
+                              "message"
+                            ]
+                          },
+                          "description": "Only returns this array if there are validation issues",
+                          "example": [
+                            {
+                              "path": "info.name",
+                              "message": "Name is required"
+                            },
+                            {
+                              "path": "password",
+                              "message": "Password must be at least 6 characters long"
+                            }
+                          ]
+                        }
+                      },
+                      "required": [
+                        "status",
+                        "message",
+                        "validationIssues"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthenticated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "type": "number",
+                          "example": 401
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Unauthenticated"
+                        }
+                      },
+                      "required": [
+                        "status",
+                        "message"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthenticated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "type": "number",
+                          "example": 403
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Forbidden"
+                        }
+                      },
+                      "required": [
+                        "status",
+                        "message"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "type": "number",
+                          "example": 404
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Not found"
+                        }
+                      },
+                      "required": [
+                        "status",
+                        "message"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "example": "b634aa92-6d42-4173-968d-d23812fd9d6e"
+                        },
+                        "status": {
+                          "type": "number",
+                          "example": 500
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Internal Server Error"
+                        },
+                        "timestamp": {
+                          "type": "string",
+                          "example": "2024-09-26T02:51:11.229Z"
+                        },
+                        "request": {
+                          "type": "string",
+                          "example": "/api/users/1"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "status",
+                        "message",
+                        "timestamp",
+                        "request"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "description": "Delete a product by id",
+        "tags": [
+          "Products"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "type": "number",
+                          "example": 400
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Bad Request"
+                        },
+                        "validationIssues": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "path": {
+                                "type": "string"
+                              },
+                              "message": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "path",
+                              "message"
+                            ]
+                          },
+                          "description": "Only returns this array if there are validation issues",
+                          "example": [
+                            {
+                              "path": "info.name",
+                              "message": "Name is required"
+                            },
+                            {
+                              "path": "password",
+                              "message": "Password must be at least 6 characters long"
+                            }
+                          ]
+                        }
+                      },
+                      "required": [
+                        "status",
+                        "message",
+                        "validationIssues"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthenticated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "type": "number",
+                          "example": 401
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Unauthenticated"
+                        }
+                      },
+                      "required": [
+                        "status",
+                        "message"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthenticated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "type": "number",
+                          "example": 403
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Forbidden"
+                        }
+                      },
+                      "required": [
+                        "status",
+                        "message"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "type": "number",
+                          "example": 404
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Not found"
+                        }
+                      },
+                      "required": [
+                        "status",
+                        "message"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "example": "b634aa92-6d42-4173-968d-d23812fd9d6e"
+                        },
+                        "status": {
+                          "type": "number",
+                          "example": 500
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Internal Server Error"
+                        },
+                        "timestamp": {
+                          "type": "string",
+                          "example": "2024-09-26T02:51:11.229Z"
+                        },
+                        "request": {
+                          "type": "string",
+                          "example": "/api/users/1"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "status",
+                        "message",
+                        "timestamp",
+                        "request"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/register": {
+      "post": {
+        "description": "Register a new user",
+        "tags": [
+          "Auth"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "minLength": 1,
+                    "format": "email"
+                  },
+                  "password": {
+                    "type": "string",
+                    "minLength": 6
+                  }
+                },
+                "required": [
+                  "email",
+                  "password"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "user": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer"
+                        },
+                        "email": {
+                          "type": "string"
+                        },
+                        "provider": {
+                          "type": "string"
+                        },
+                        "confirmationToken": {
+                          "type": "string",
+                          "nullable": true
+                        },
+                        "confirmed": {
+                          "type": "boolean"
+                        },
+                        "blocked": {
+                          "type": "boolean"
+                        },
+                        "createdAt": {
+                          "type": "string",
+                          "nullable": true
+                        },
+                        "updatedAt": {
+                          "type": "string",
+                          "nullable": true
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "email",
+                        "provider",
+                        "confirmationToken",
+                        "confirmed",
+                        "blocked",
+                        "createdAt",
+                        "updatedAt"
+                      ]
+                    },
+                    "accessToken": {
+                      "type": "object",
+                      "properties": {
+                        "token": {
+                          "type": "string",
+                          "example": "eyJhbGciOiJIU...Jf36POk6yJVadQssw5c"
+                        },
+                        "issuedAt": {
+                          "type": "number",
+                          "example": 1667116800000
+                        },
+                        "expiresAt": {
+                          "type": "number",
+                          "example": 1667203200000
+                        }
+                      },
+                      "required": [
+                        "token",
+                        "issuedAt",
+                        "expiresAt"
+                      ]
+                    },
+                    "refreshToken": {
+                      "type": "object",
+                      "properties": {
+                        "token": {
+                          "type": "string",
+                          "example": "eyJhbGciOiJIU...Jf36POk6yJVadQssw5c"
+                        },
+                        "issuedAt": {
+                          "type": "number",
+                          "example": 1667116800000
+                        },
+                        "expiresAt": {
+                          "type": "number",
+                          "example": 1667203200000
+                        }
+                      },
+                      "required": [
+                        "token",
+                        "issuedAt",
+                        "expiresAt"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "user",
+                    "accessToken",
+                    "refreshToken"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "type": "number",
+                          "example": 400
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Bad Request"
+                        },
+                        "validationIssues": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "path": {
+                                "type": "string"
+                              },
+                              "message": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "path",
+                              "message"
+                            ]
+                          },
+                          "description": "Only returns this array if there are validation issues",
+                          "example": [
+                            {
+                              "path": "info.name",
+                              "message": "Name is required"
+                            },
+                            {
+                              "path": "password",
+                              "message": "Password must be at least 6 characters long"
+                            }
+                          ]
+                        }
+                      },
+                      "required": [
+                        "status",
+                        "message",
+                        "validationIssues"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "example": "b634aa92-6d42-4173-968d-d23812fd9d6e"
+                        },
+                        "status": {
+                          "type": "number",
+                          "example": 500
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Internal Server Error"
+                        },
+                        "timestamp": {
+                          "type": "string",
+                          "example": "2024-09-26T02:51:11.229Z"
+                        },
+                        "request": {
+                          "type": "string",
+                          "example": "/api/users/1"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "status",
+                        "message",
+                        "timestamp",
+                        "request"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "description": "Login a user",
+        "tags": [
+          "Auth"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "minLength": 1,
+                    "format": "email"
+                  },
+                  "password": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "required": [
+                  "email",
+                  "password"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "user": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer"
+                        },
+                        "email": {
+                          "type": "string"
+                        },
+                        "provider": {
+                          "type": "string"
+                        },
+                        "confirmationToken": {
+                          "type": "string",
+                          "nullable": true
+                        },
+                        "confirmed": {
+                          "type": "boolean"
+                        },
+                        "blocked": {
+                          "type": "boolean"
+                        },
+                        "createdAt": {
+                          "type": "string",
+                          "nullable": true
+                        },
+                        "updatedAt": {
+                          "type": "string",
+                          "nullable": true
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "email",
+                        "provider",
+                        "confirmationToken",
+                        "confirmed",
+                        "blocked",
+                        "createdAt",
+                        "updatedAt"
+                      ]
+                    },
+                    "accessToken": {
+                      "type": "object",
+                      "properties": {
+                        "token": {
+                          "type": "string",
+                          "example": "eyJhbGciOiJIU...Jf36POk6yJVadQssw5c"
+                        },
+                        "issuedAt": {
+                          "type": "number",
+                          "example": 1667116800000
+                        },
+                        "expiresAt": {
+                          "type": "number",
+                          "example": 1667203200000
+                        }
+                      },
+                      "required": [
+                        "token",
+                        "issuedAt",
+                        "expiresAt"
+                      ]
+                    },
+                    "refreshToken": {
+                      "type": "object",
+                      "properties": {
+                        "token": {
+                          "type": "string",
+                          "example": "eyJhbGciOiJIU...Jf36POk6yJVadQssw5c"
+                        },
+                        "issuedAt": {
+                          "type": "number",
+                          "example": 1667116800000
+                        },
+                        "expiresAt": {
+                          "type": "number",
+                          "example": 1667203200000
+                        }
+                      },
+                      "required": [
+                        "token",
+                        "issuedAt",
+                        "expiresAt"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "user",
+                    "accessToken",
+                    "refreshToken"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "type": "number",
+                          "example": 400
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Bad Request"
+                        },
+                        "validationIssues": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "path": {
+                                "type": "string"
+                              },
+                              "message": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "path",
+                              "message"
+                            ]
+                          },
+                          "description": "Only returns this array if there are validation issues",
+                          "example": [
+                            {
+                              "path": "info.name",
+                              "message": "Name is required"
+                            },
+                            {
+                              "path": "password",
+                              "message": "Password must be at least 6 characters long"
+                            }
+                          ]
+                        }
+                      },
+                      "required": [
+                        "status",
+                        "message",
+                        "validationIssues"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "example": "b634aa92-6d42-4173-968d-d23812fd9d6e"
+                        },
+                        "status": {
+                          "type": "number",
+                          "example": 500
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Internal Server Error"
+                        },
+                        "timestamp": {
+                          "type": "string",
+                          "example": "2024-09-26T02:51:11.229Z"
+                        },
+                        "request": {
+                          "type": "string",
+                          "example": "/api/users/1"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "status",
+                        "message",
+                        "timestamp",
+                        "request"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/refresh": {
+      "get": {
+        "description": "Refresh the access token",
+        "tags": [
+          "Auth"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "example": "Bearer eyJhbGciOiJIU...Jf36POk6yJVadQssw5c"
+            },
+            "required": true,
+            "name": "Authorization",
+            "in": "header"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "user": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer"
+                        },
+                        "email": {
+                          "type": "string"
+                        },
+                        "provider": {
+                          "type": "string"
+                        },
+                        "confirmationToken": {
+                          "type": "string",
+                          "nullable": true
+                        },
+                        "confirmed": {
+                          "type": "boolean"
+                        },
+                        "blocked": {
+                          "type": "boolean"
+                        },
+                        "createdAt": {
+                          "type": "string",
+                          "nullable": true
+                        },
+                        "updatedAt": {
+                          "type": "string",
+                          "nullable": true
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "email",
+                        "provider",
+                        "confirmationToken",
+                        "confirmed",
+                        "blocked",
+                        "createdAt",
+                        "updatedAt"
+                      ]
+                    },
+                    "accessToken": {
+                      "type": "object",
+                      "properties": {
+                        "token": {
+                          "type": "string",
+                          "example": "eyJhbGciOiJIU...Jf36POk6yJVadQssw5c"
+                        },
+                        "issuedAt": {
+                          "type": "number",
+                          "example": 1667116800000
+                        },
+                        "expiresAt": {
+                          "type": "number",
+                          "example": 1667203200000
+                        }
+                      },
+                      "required": [
+                        "token",
+                        "issuedAt",
+                        "expiresAt"
+                      ]
+                    },
+                    "refreshToken": {
+                      "type": "object",
+                      "properties": {
+                        "token": {
+                          "type": "string",
+                          "example": "eyJhbGciOiJIU...Jf36POk6yJVadQssw5c"
+                        },
+                        "issuedAt": {
+                          "type": "number",
+                          "example": 1667116800000
+                        },
+                        "expiresAt": {
+                          "type": "number",
+                          "example": 1667203200000
+                        }
+                      },
+                      "required": [
+                        "token",
+                        "issuedAt",
+                        "expiresAt"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "user",
+                    "accessToken",
+                    "refreshToken"
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "example": "b634aa92-6d42-4173-968d-d23812fd9d6e"
+                        },
+                        "status": {
+                          "type": "number",
+                          "example": 500
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Internal Server Error"
+                        },
+                        "timestamp": {
+                          "type": "string",
+                          "example": "2024-09-26T02:51:11.229Z"
+                        },
+                        "request": {
+                          "type": "string",
+                          "example": "/api/users/1"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "status",
+                        "message",
+                        "timestamp",
+                        "request"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/me": {
+      "get": {
+        "description": "Get the current user",
+        "tags": [
+          "Auth"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    },
+                    "email": {
+                      "type": "string"
+                    },
+                    "provider": {
+                      "type": "string"
+                    },
+                    "confirmationToken": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "confirmed": {
+                      "type": "boolean"
+                    },
+                    "blocked": {
+                      "type": "boolean"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "nullable": true
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "email",
+                    "provider",
+                    "confirmationToken",
+                    "confirmed",
+                    "blocked",
+                    "createdAt",
+                    "updatedAt"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthenticated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "type": "number",
+                          "example": 401
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Unauthenticated"
+                        }
+                      },
+                      "required": [
+                        "status",
+                        "message"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthenticated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "type": "number",
+                          "example": 403
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Forbidden"
+                        }
+                      },
+                      "required": [
+                        "status",
+                        "message"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "example": "b634aa92-6d42-4173-968d-d23812fd9d6e"
+                        },
+                        "status": {
+                          "type": "number",
+                          "example": 500
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Internal Server Error"
+                        },
+                        "timestamp": {
+                          "type": "string",
+                          "example": "2024-09-26T02:51:11.229Z"
+                        },
+                        "request": {
+                          "type": "string",
+                          "example": "/api/users/1"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "status",
+                        "message",
+                        "timestamp",
+                        "request"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/password-reset/forgot-password": {
+      "post": {
+        "description": "Send password reset email",
+        "tags": [
+          "Password Reset"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "minLength": 1,
+                    "format": "email"
+                  }
+                },
+                "required": [
+                  "email"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Password reset email sent"
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "message"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "type": "number",
+                          "example": 400
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Bad Request"
+                        },
+                        "validationIssues": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "path": {
+                                "type": "string"
+                              },
+                              "message": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "path",
+                              "message"
+                            ]
+                          },
+                          "description": "Only returns this array if there are validation issues",
+                          "example": [
+                            {
+                              "path": "info.name",
+                              "message": "Name is required"
+                            },
+                            {
+                              "path": "password",
+                              "message": "Password must be at least 6 characters long"
+                            }
+                          ]
+                        }
+                      },
+                      "required": [
+                        "status",
+                        "message",
+                        "validationIssues"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "example": "b634aa92-6d42-4173-968d-d23812fd9d6e"
+                        },
+                        "status": {
+                          "type": "number",
+                          "example": 500
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Internal Server Error"
+                        },
+                        "timestamp": {
+                          "type": "string",
+                          "example": "2024-09-26T02:51:11.229Z"
+                        },
+                        "request": {
+                          "type": "string",
+                          "example": "/api/users/1"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "status",
+                        "message",
+                        "timestamp",
+                        "request"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/password-reset/reset-password": {
+      "post": {
+        "description": "Reset password",
+        "tags": [
+          "Password Reset"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "token": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "password": {
+                    "type": "string",
+                    "minLength": 6
+                  }
+                },
+                "required": [
+                  "token",
+                  "password"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    },
+                    "email": {
+                      "type": "string"
+                    },
+                    "provider": {
+                      "type": "string"
+                    },
+                    "confirmationToken": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "confirmed": {
+                      "type": "boolean"
+                    },
+                    "blocked": {
+                      "type": "boolean"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "nullable": true
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "email",
+                    "provider",
+                    "confirmationToken",
+                    "confirmed",
+                    "blocked",
+                    "createdAt",
+                    "updatedAt"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "type": "number",
+                          "example": 400
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Bad Request"
+                        },
+                        "validationIssues": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "path": {
+                                "type": "string"
+                              },
+                              "message": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "path",
+                              "message"
+                            ]
+                          },
+                          "description": "Only returns this array if there are validation issues",
+                          "example": [
+                            {
+                              "path": "info.name",
+                              "message": "Name is required"
+                            },
+                            {
+                              "path": "password",
+                              "message": "Password must be at least 6 characters long"
+                            }
+                          ]
+                        }
+                      },
+                      "required": [
+                        "status",
+                        "message",
+                        "validationIssues"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "example": "b634aa92-6d42-4173-968d-d23812fd9d6e"
+                        },
+                        "status": {
+                          "type": "number",
+                          "example": 500
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Internal Server Error"
+                        },
+                        "timestamp": {
+                          "type": "string",
+                          "example": "2024-09-26T02:51:11.229Z"
+                        },
+                        "request": {
+                          "type": "string",
+                          "example": "/api/users/1"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "status",
+                        "message",
+                        "timestamp",
+                        "request"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

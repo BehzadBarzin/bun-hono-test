@@ -11,6 +11,7 @@ import { idParamSchema } from '../../common/schemas/id-param.schema';
 import { validateFilterQuery } from '../../middlewares/validate-filter-query.middleware';
 import { zValidator } from '../../middlewares/z-validator.middleware';
 
+import { registerProductsDocs } from './products.docs';
 import { ProductsService } from './products.service';
 import { createProductBodySchema } from './schemas/create-product-body.schema';
 import { productsFilterQuerySchema } from './schemas/products-filter-query.schema';
@@ -124,6 +125,10 @@ export function getProductsRouter(): Hono<{ Variables: Variables & AuthVariables
     },
   );
 
+  // -----------------------------------------------------------------------------------------------
+  // -----------------------------------------------------------------------------------------------
+  // Register Docs
+  registerProductsDocs();
   // -----------------------------------------------------------------------------------------------
   // -----------------------------------------------------------------------------------------------
   return router;

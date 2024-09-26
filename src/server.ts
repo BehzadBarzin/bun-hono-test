@@ -1,3 +1,5 @@
+import './docs/extend-zod';
+import { swaggerUI } from '@hono/swagger-ui';
 import { Prisma } from '@prisma/client';
 import { Hono } from 'hono';
 import { serveStatic } from 'hono/bun';
@@ -9,6 +11,7 @@ import apiRouter from './api';
 import authRouter from './auth/api';
 import { seedAuthDB } from './auth/utils/seed-db';
 import { configs } from './configs';
+import { generateDocsJson } from './docs/generate-docs-json';
 import { BaseException } from './exceptions/base.exception';
 import { NotFoundException } from './exceptions/not-found.exception';
 import { ValidationException } from './exceptions/validation.exception';
@@ -100,6 +103,13 @@ logger.info(`⚡️Server running on ${configs.app.host}:${configs.app.port}`);
 // -------------------------------------------------------------------------------------------------
 // Seed DB with Auth data
 await seedAuthDB();
+// -------------------------------------------------------------------------------------------------
+// -------------------------------------------------------------------------------------------------
+// OpenAPI + SwaggerUI
+await generateDocsJson(); // Generate docs and save to /public/docs.json
+// Use the middleware to serve Swagger UI at /docs
+app.get('/docs', swaggerUI({ url: '/docs.json', persistAuthorization: true }));
+logger.info(`✅SwaggerUI served at ${configs.app.host}:${configs.app.port}/ui`);
 // -------------------------------------------------------------------------------------------------
 // -------------------------------------------------------------------------------------------------
 export default {

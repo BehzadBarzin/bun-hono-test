@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 
 import { zValidator } from '../../../middlewares/z-validator.middleware';
 
+import { registerPasswordResetDocs } from './password-reset.docs';
 import { PasswordResetService } from './password-reset.service';
 import { forgotPasswordBodySchema } from './schemas/forgot-password-body.schema';
 import { resetPasswordBodySchema } from './schemas/reset-password-body.schema';
@@ -42,6 +43,10 @@ export function getPasswordResetRouter(): Hono {
     return c.json(user);
   });
 
+  // -----------------------------------------------------------------------------------------------
+  // -----------------------------------------------------------------------------------------------
+  // Register Docs
+  registerPasswordResetDocs();
   // -----------------------------------------------------------------------------------------------
   // -----------------------------------------------------------------------------------------------
   return router;
