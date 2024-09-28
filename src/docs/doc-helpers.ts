@@ -20,6 +20,7 @@ type TRouteConfig = {
   requestHeadersSchema?: AnyZodObject;
   // ------------------------------------------
   // Response Configs
+  successResponseCode?: '200' | '201' | '202' | '204';
   successResponseSchema?: AnyZodObject; // For both normal and paginated item responses
   returns400?: boolean;
   returns404?: boolean;
@@ -97,9 +98,14 @@ export function registerRouteDoc(routeConfig: TRouteConfig) {
     };
   }
 
-  // 200 Response
+  // Set default success Response Code
+  if (!routeConfig.successResponseCode) {
+    routeConfig.successResponseCode = '200';
+  }
+
+  // Success Response
   if (routeConfig.successResponseSchema) {
-    configs.responses['200'] = {
+    configs.responses[routeConfig.successResponseCode] = {
       description: 'Success',
       content: {
         'application/json': {

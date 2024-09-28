@@ -35,6 +35,7 @@ export function registerProductsDocs() {
     description: 'Create a new product',
     tag,
     requestJsonSchema: createProductBodySchema, // Request body
+    successResponseCode: '201', // Success Code
     successResponseSchema: ProductSchema, // Returns the created product
     returns400: true, // Invalid body
     authenticatedRoute: true, // Requires authentication

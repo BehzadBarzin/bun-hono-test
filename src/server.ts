@@ -109,7 +109,7 @@ await seedAuthDB();
 await generateDocsJson(); // Generate docs and save to /public/docs.json
 // Use the middleware to serve Swagger UI at /docs
 app.get('/docs', swaggerUI({ url: '/docs.json', persistAuthorization: true }));
-logger.info(`✅SwaggerUI served at ${configs.app.host}:${configs.app.port}/ui`);
+logger.info(`✅SwaggerUI served at ${configs.app.host}:${configs.app.port}/docs`);
 // -------------------------------------------------------------------------------------------------
 // -------------------------------------------------------------------------------------------------
 export default {
