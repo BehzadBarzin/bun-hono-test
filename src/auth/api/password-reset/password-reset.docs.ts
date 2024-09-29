@@ -7,7 +7,7 @@ import { forgotPasswordBodySchema } from './schemas/forgot-password-body.schema'
 import { resetPasswordBodySchema } from './schemas/reset-password-body.schema';
 
 // The base path for this router
-const basePath = '/password-reset';
+const basePath = '/auth';
 // Group of routes
 const tag = 'Password Reset';
 

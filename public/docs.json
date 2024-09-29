@@ -2144,7 +2144,7 @@
         }
       }
     },
-    "/password-reset/forgot-password": {
+    "/auth/forgot-password": {
       "post": {
         "description": "Send password reset email",
         "tags": [
@@ -2306,7 +2306,7 @@
         }
       }
     },
-    "/password-reset/reset-password": {
+    "/auth/reset-password": {
       "post": {
         "description": "Reset password",
         "tags": [
