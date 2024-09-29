@@ -108,7 +108,14 @@ await seedAuthDB();
 // OpenAPI + SwaggerUI
 await generateDocsJson(); // Generate docs and save to /public/docs.json
 // Use the middleware to serve Swagger UI at /docs
-app.get('/docs', swaggerUI({ url: '/docs.json', persistAuthorization: true }));
+app.get(
+  '/docs',
+  swaggerUI({
+    url: '/docs.json',
+    persistAuthorization: true,
+    docExpansion: 'none', // Collapse all groups
+  }),
+);
 logger.info(`✅SwaggerUI served at ${configs.app.host}:${configs.app.port}/docs`);
 // -------------------------------------------------------------------------------------------------
 // -------------------------------------------------------------------------------------------------
